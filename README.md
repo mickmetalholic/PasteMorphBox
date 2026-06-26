@@ -32,3 +32,21 @@ pnpm build
 ## Deployment
 
 The web app builds to `apps/web/dist` and can be deployed to any static host.
+
+### Cloudflare Pages
+
+Use the repository root as the project root.
+
+```txt
+Build command: pnpm build
+Build output directory: apps/web/dist
+```
+
+Recommended build environment variables:
+
+```txt
+NODE_VERSION=24
+PNPM_VERSION=11.9.0
+```
+
+The checked-in `wrangler.toml` sets the Pages project name and output directory for Wrangler-based deploys.
