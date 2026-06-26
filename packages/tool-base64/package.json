@@ -1,0 +1,24 @@
+{
+  "name": "@pastemorphbox/tool-base64",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "oxlint src",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@pastemorphbox/core": "workspace:*"
+  },
+  "devDependencies": {
+    "oxlint": "^1.69.0",
+    "typescript": "~6.0.2",
+    "vitest": "^4.0.16"
+  }
+}
