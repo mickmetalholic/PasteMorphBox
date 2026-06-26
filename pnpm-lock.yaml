@@ -45,6 +45,9 @@ importers:
         specifier: ^5.0.9
         version: 5.0.14(@types/react@19.2.17)(react@19.2.7)(use-sync-external-store@1.6.0(react@19.2.7))
     devDependencies:
+      '@pastemorphbox/config-ts':
+        specifier: workspace:*
+        version: link:../../packages/config-ts
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.3.1(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0))
@@ -82,6 +85,9 @@ importers:
 
   packages/core:
     devDependencies:
+      '@pastemorphbox/config-ts':
+        specifier: workspace:*
+        version: link:../config-ts
       oxlint:
         specifier: ^1.69.0
         version: 1.71.0
@@ -113,6 +119,9 @@ importers:
         specifier: workspace:*
         version: link:../tool-url
     devDependencies:
+      '@pastemorphbox/config-ts':
+        specifier: workspace:*
+        version: link:../config-ts
       oxlint:
         specifier: ^1.69.0
         version: 1.71.0
@@ -129,6 +138,9 @@ importers:
         specifier: workspace:*
         version: link:../core
     devDependencies:
+      '@pastemorphbox/config-ts':
+        specifier: workspace:*
+        version: link:../config-ts
       oxlint:
         specifier: ^1.69.0
         version: 1.71.0
@@ -148,6 +160,9 @@ importers:
         specifier: ^4.0.2
         version: 4.0.2
     devDependencies:
+      '@pastemorphbox/config-ts':
+        specifier: workspace:*
+        version: link:../config-ts
       '@types/culori':
         specifier: ^4.0.1
         version: 4.0.1
@@ -167,6 +182,9 @@ importers:
         specifier: workspace:*
         version: link:../core
     devDependencies:
+      '@pastemorphbox/config-ts':
+        specifier: workspace:*
+        version: link:../config-ts
       oxlint:
         specifier: ^1.69.0
         version: 1.71.0
@@ -183,6 +201,9 @@ importers:
         specifier: workspace:*
         version: link:../core
     devDependencies:
+      '@pastemorphbox/config-ts':
+        specifier: workspace:*
+        version: link:../config-ts
       oxlint:
         specifier: ^1.69.0
         version: 1.71.0
@@ -199,6 +220,9 @@ importers:
         specifier: workspace:*
         version: link:../core
     devDependencies:
+      '@pastemorphbox/config-ts':
+        specifier: workspace:*
+        version: link:../config-ts
       oxlint:
         specifier: ^1.69.0
         version: 1.71.0
@@ -218,6 +242,9 @@ importers:
         specifier: ^3.4.0
         version: 3.6.0
     devDependencies:
+      '@pastemorphbox/config-ts':
+        specifier: workspace:*
+        version: link:../config-ts
       oxlint:
         specifier: ^1.69.0
         version: 1.71.0

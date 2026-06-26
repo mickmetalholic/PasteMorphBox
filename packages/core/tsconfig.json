@@ -1,4 +1,4 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "@pastemorphbox/config-ts/base",
   "include": ["src"]
 }
