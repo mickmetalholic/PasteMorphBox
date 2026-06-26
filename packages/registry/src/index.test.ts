@@ -13,6 +13,13 @@ describe('registry', () => {
     expect(match?.confidence).toBeGreaterThan(0.9)
   })
 
+  it('keeps generic Base64 encoding below more specific matches', () => {
+    const matches = detectAll('#ff6600')
+
+    expect(matches.map((match) => match.toolId)).toEqual(['color', 'base64'])
+    expect(matches[0]?.confidence).toBeGreaterThan(matches[1]?.confidence ?? 0)
+  })
+
   it('looks up modules by tool id', () => {
     const jsonTool = getToolModule('json')
 

@@ -2,48 +2,58 @@ import type { ToolModule } from '@pastemorphbox/core'
 
 export type Base64State = {
   raw: string
-  decoded: string
+  decoded?: string
   encoded: string
 }
+
+const genericEncodingConfidence = 0.35
 
 export const base64Tool: ToolModule<Base64State> = {
   id: 'base64',
   name: 'Base64',
   description: 'Encode and decode Base64 text.',
   detect(input) {
-    if (!looksLikeBase64(input)) {
+    const source = input.trim()
+
+    if (!source) {
       return []
     }
 
-    const decoded = decodeBase64(input)
+    if (looksLikeBase64(source)) {
+      const decoded = decodeBase64(source)
 
-    if (decoded === null || !isMostlyPrintable(decoded)) {
-      return []
+      if (decoded !== null && isMostlyPrintable(decoded)) {
+        return [
+          {
+            title: 'Base64 conversion',
+            subtitle: 'Decoded as UTF-8 Base64 text',
+            confidence: 0.76,
+            state: {
+              raw: source,
+              decoded,
+              encoded: encodeBase64(decoded),
+            },
+            source,
+          },
+        ]
+      }
     }
 
     return [
       {
         title: 'Base64 conversion',
-        subtitle: 'Decoded as UTF-8 Base64 text',
-        confidence: 0.76,
+        subtitle: 'Encoded as UTF-8 Base64 text',
+        confidence: genericEncodingConfidence,
         state: {
-          raw: input,
-          decoded,
-          encoded: encodeBase64(decoded),
+          raw: source,
+          encoded: encodeBase64(source),
         },
-        source: input,
+        source,
       },
     ]
   },
   getFields(state) {
-    return [
-      {
-        id: 'decoded',
-        label: 'Decoded text',
-        value: state.decoded,
-        wide: true,
-        monospace: true,
-      },
+    const fields = [
       {
         id: 'encoded',
         label: 'Encoded Base64',
@@ -52,9 +62,33 @@ export const base64Tool: ToolModule<Base64State> = {
         monospace: true,
       },
     ]
+
+    if (state.decoded !== undefined) {
+      return [
+        {
+          id: 'decoded',
+          label: 'Decoded text',
+          value: state.decoded,
+          wide: true,
+          monospace: true,
+        },
+        ...fields,
+      ]
+    }
+
+    return [
+      {
+        id: 'raw',
+        label: 'Original text',
+        value: state.raw,
+        wide: true,
+        monospace: true,
+      },
+      ...fields,
+    ]
   },
   serializePrimary(state) {
-    return state.decoded
+    return state.decoded ?? state.encoded
   },
 }
 

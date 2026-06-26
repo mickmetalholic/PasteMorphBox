@@ -1,6 +1,4 @@
-# Text Codecs Spec
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: URL and Base64 codecs
 
