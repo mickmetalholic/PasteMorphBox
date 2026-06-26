@@ -17,3 +17,18 @@ The project SHALL include repo-local OpenSpec configuration declaring the active
 - **WHEN** a developer runs OpenSpec commands from the repository root
 - **THEN** the CLI SHALL resolve the `spec-driven` schema from `openspec/config.yaml`.
 
+### Requirement: Pull request CI checks
+The project SHALL run automated CI checks for pull requests using GitHub Actions.
+
+#### Scenario: Pull request validation
+- **WHEN** a pull request is opened, synchronized, or reopened
+- **THEN** CI SHALL run the repository test suite, type checking, and production build commands
+
+#### Scenario: Main branch validation
+- **WHEN** changes are pushed to `main`
+- **THEN** CI SHALL run the repository test suite, type checking, and production build commands
+
+#### Scenario: Required check configuration
+- **WHEN** repository maintainers configure GitHub branch protection
+- **THEN** the CI workflow SHALL expose a stable check that can be required before merging
+
