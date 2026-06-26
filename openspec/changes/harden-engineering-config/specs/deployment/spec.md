@@ -1,0 +1,8 @@
+## ADDED Requirements
+
+### Requirement: Cached production build output
+The workspace build configuration SHALL declare the web app static build directory as a Turborepo build output.
+
+#### Scenario: Production build cache
+- **WHEN** a developer or CI runner runs `pnpm build`
+- **THEN** Turborepo SHALL know that `apps/web/dist` contains the deployable build output.
