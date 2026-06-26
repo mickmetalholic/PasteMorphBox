@@ -9,7 +9,7 @@
   "types": "./src/index.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "lint": "oxlint src",
+    "lint": "oxlint -c ../../.oxlintrc.json src",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json"
   },
@@ -17,6 +17,7 @@
     "@pastemorphbox/core": "workspace:*"
   },
   "devDependencies": {
+    "@pastemorphbox/config-ts": "workspace:*",
     "oxlint": "^1.69.0",
     "typescript": "~6.0.2",
     "vitest": "^4.0.16"
