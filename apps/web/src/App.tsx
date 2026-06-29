@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Clipboard, CornerDownLeft, Sparkles } from 'lucide-react'
+import { Clipboard, CornerDownLeft, HelpCircle, Sparkles, Wand2 } from 'lucide-react'
 import type { AnyToolMatch, ToolField } from '@pastemorphbox/core'
 import { detectAll, getToolModule } from '@pastemorphbox/registry'
 import { cn } from '@pastemorphbox/ui'
+import { getExamplesByGroup, getHighlightedExamples, getNoMatchSuggestions, type PasteExample } from './discovery'
 import { Route } from './router'
 import { useInputStore } from './store'
 
@@ -16,6 +17,7 @@ export function App() {
   const search = Route.useSearch()
   const input = useInputStore((store) => store.input)
   const setInput = useInputStore((store) => store.setInput)
+  const [examplesOpen, setExamplesOpen] = useState(false)
 
   useEffect(() => {
     setInput(search.q === undefined ? '' : String(search.q))
@@ -26,6 +28,11 @@ export function App() {
   function updateInput(next: string) {
     setInput(next)
     replaceQueryInput(next)
+  }
+
+  function tryExample(example: PasteExample) {
+    updateInput(example.sample)
+    setExamplesOpen(false)
   }
 
   return (
@@ -43,18 +50,30 @@ export function App() {
         </header>
 
         <section className="space-y-3">
-          <label htmlFor="smart-input" className="text-sm font-medium text-slate-700">
-            Smart input
-          </label>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <label htmlFor="smart-input" className="text-sm font-medium text-slate-700">
+              Smart input
+            </label>
+            <button
+              type="button"
+              onClick={() => setExamplesOpen((current) => !current)}
+              className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50"
+              aria-expanded={examplesOpen}
+            >
+              <HelpCircle className="size-4" />
+              Examples
+            </button>
+          </div>
           <textarea
             id="smart-input"
             value={input}
             onChange={(event) => updateInput(event.target.value)}
-            placeholder="Paste a timestamp, color, JSON, URL, or Base64 text..."
+            placeholder="Paste JSON, a URL, timestamp, color, Base64, or messy text..."
             rows={5}
             className="min-h-36 w-full resize-y rounded-lg border border-slate-300 bg-white p-4 font-mono text-base leading-6 text-slate-950 shadow-sm outline-none transition focus:border-cyan-600 focus:ring-4 focus:ring-cyan-100"
             spellCheck={false}
           />
+          {examplesOpen ? <ExamplesPanel onTryExample={tryExample} /> : null}
           <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-slate-500">
             <span>{matches.length ? `${matches.length} possible conversion${matches.length === 1 ? '' : 's'} detected` : 'No input leaves the workspace.'}</span>
             {input ? (
@@ -65,7 +84,13 @@ export function App() {
           </div>
         </section>
 
-        {matches.length ? <ResultList matches={matches} onApplyInput={updateInput} /> : <EmptyState />}
+        {matches.length ? (
+          <ResultList matches={matches} onApplyInput={updateInput} />
+        ) : input ? (
+          <NoMatchGuidance onTryExample={tryExample} />
+        ) : (
+          <EmptyState onTryExample={tryExample} />
+        )}
       </div>
     </main>
   )
@@ -167,7 +192,7 @@ function ToolCard({
             <span className="rounded-full bg-cyan-50 px-2 py-1 text-xs font-medium text-cyan-700">{Math.round(match.confidence * 100)}%</span>
           </div>
           <p className="mt-1 text-sm text-slate-500">
-            {match.subtitle}
+            {match.subtitle}. Detected from the pasted input with {Math.round(match.confidence * 100)}% confidence
             {cardState.dirty ? ' · Edited inside this card' : ''}
           </p>
           {cardState.error ? <p className="mt-2 text-sm text-red-600">{cardState.error}</p> : null}
@@ -274,12 +299,67 @@ function EditableValue({
   )
 }
 
-function EmptyState() {
+function EmptyState({ onTryExample }: { onTryExample: (example: PasteExample) => void }) {
   return (
-    <section className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-600">
-      Try values like <code className="rounded bg-slate-100 px-1.5 py-1 font-mono text-slate-900">#ff6600</code>,{' '}
-      <code className="rounded bg-slate-100 px-1.5 py-1 font-mono text-slate-900">1700000000</code>, or{' '}
-      <code className="rounded bg-slate-100 px-1.5 py-1 font-mono text-slate-900">{'{"id":123}'}</code>.
+    <section className="rounded-lg border border-dashed border-slate-300 bg-white p-5">
+      <div className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-700">
+        <Wand2 className="size-4 text-cyan-600" />
+        Try a paste scenario
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        {getHighlightedExamples().map((example) => (
+          <ExampleButton key={example.id} example={example} onTryExample={onTryExample} />
+        ))}
+      </div>
     </section>
+  )
+}
+
+function ExamplesPanel({ onTryExample }: { onTryExample: (example: PasteExample) => void }) {
+  return (
+    <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="grid gap-4 md:grid-cols-3">
+        {getExamplesByGroup().map(([group, examples]) => (
+          <div key={group} className="space-y-2">
+            <h2 className="text-sm font-semibold text-slate-950">{group}</h2>
+            <div className="grid gap-2">
+              {examples.map((example) => (
+                <ExampleButton key={example.id} example={example} onTryExample={onTryExample} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function NoMatchGuidance({ onTryExample }: { onTryExample: (example: PasteExample) => void }) {
+  return (
+    <section className="rounded-lg border border-slate-200 bg-white p-5">
+      <div className="mb-4">
+        <h2 className="text-base font-semibold text-slate-950">No strong match yet</h2>
+        <p className="mt-1 text-sm text-slate-500">Try a known paste shape while broader text cleanup and extraction tools are added.</p>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-3">
+        {getNoMatchSuggestions().map((example) => (
+          <ExampleButton key={example.id} example={example} onTryExample={onTryExample} />
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function ExampleButton({ example, onTryExample }: { example: PasteExample; onTryExample: (example: PasteExample) => void }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onTryExample(example)}
+      className="min-h-24 rounded-md border border-slate-200 bg-slate-50 p-3 text-left transition hover:border-cyan-300 hover:bg-cyan-50 focus:outline-none focus:ring-2 focus:ring-cyan-200"
+    >
+      <span className="block text-sm font-semibold text-slate-950">{example.label}</span>
+      <span className="mt-1 block text-sm leading-5 text-slate-600">{example.description}</span>
+      <code className="mt-2 block truncate rounded bg-white px-2 py-1 font-mono text-xs text-slate-500">{example.sample}</code>
+    </button>
   )
 }
