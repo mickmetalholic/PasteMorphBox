@@ -1,5 +1,5 @@
 {
-  "name": "@pastemorphbox/registry",
+  "name": "@pastemorphbox/tool-extract",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,14 +14,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@pastemorphbox/core": "workspace:*",
-    "@pastemorphbox/tool-base64": "workspace:*",
-    "@pastemorphbox/tool-color": "workspace:*",
-    "@pastemorphbox/tool-extract": "workspace:*",
-    "@pastemorphbox/tool-json": "workspace:*",
-    "@pastemorphbox/tool-text": "workspace:*",
-    "@pastemorphbox/tool-time": "workspace:*",
-    "@pastemorphbox/tool-url": "workspace:*"
+    "@pastemorphbox/core": "workspace:*"
   },
   "devDependencies": {
     "@pastemorphbox/config-ts": "workspace:*",
