@@ -1,24 +1,25 @@
 import { describe, expect, it } from 'vitest'
-import { getExamplesByGroup, getHighlightedExamples, getNoMatchSuggestions, pasteExamples } from './discovery'
+import { getNoMatchSuggestions, getToolExampleGroups, getToolExamples } from '@pastemorphbox/registry'
 
 describe('paste discovery content', () => {
   it('uses unique example ids with non-empty samples', () => {
-    const ids = new Set(pasteExamples.map((example) => example.id))
+    const examples = getToolExamples()
+    const ids = new Set(examples.map((example) => `${example.toolId}:${example.id}`))
 
-    expect(ids.size).toBe(pasteExamples.length)
-    expect(pasteExamples.every((example) => example.sample.trim().length > 0)).toBe(true)
+    expect(ids.size).toBe(examples.length)
+    expect(examples.every((example) => example.source.trim().length > 0)).toBe(true)
   })
 
   it('exposes grouped examples for the examples panel', () => {
-    const groups = getExamplesByGroup()
+    const groups = getToolExampleGroups()
 
     expect(groups.length).toBeGreaterThan(1)
-    expect(groups.flatMap(([, examples]) => examples)).toHaveLength(pasteExamples.length)
+    expect(groups.flatMap((group) => group.examples)).toHaveLength(getToolExamples().length)
   })
 
-  it('keeps highlighted and no-match suggestions backed by real examples', () => {
-    const exampleIds = new Set(pasteExamples.map((example) => example.id))
-    const suggestedIds = [...getHighlightedExamples(), ...getNoMatchSuggestions()].map((example) => example.id)
+  it('keeps no-match suggestions backed by registered examples', () => {
+    const exampleIds = new Set(getToolExamples().map((example) => `${example.toolId}:${example.id}`))
+    const suggestedIds = getNoMatchSuggestions().map((example) => `${example.toolId}:${example.id}`)
 
     expect(suggestedIds.every((id) => exampleIds.has(id))).toBe(true)
   })
