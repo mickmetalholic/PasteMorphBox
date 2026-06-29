@@ -1,13 +1,16 @@
 import { runToolDetections, type AnyToolMatch, type AnyToolModule, type ToolCategory, type ToolExample } from '@pastemorphbox/core'
 import { base64Tool } from '@pastemorphbox/tool-base64'
 import { colorTool } from '@pastemorphbox/tool-color'
-import { developerTool } from '@pastemorphbox/tool-developer'
 import { extractTool } from '@pastemorphbox/tool-extract'
+import { hashTool } from '@pastemorphbox/tool-hash'
+import { htmlEntitiesTool } from '@pastemorphbox/tool-html-entities'
 import { jsonTool } from '@pastemorphbox/tool-json'
+import { jwtTool } from '@pastemorphbox/tool-jwt'
 import { tableTool } from '@pastemorphbox/tool-table'
 import { textTool } from '@pastemorphbox/tool-text'
 import { timeTool } from '@pastemorphbox/tool-time'
 import { urlTool } from '@pastemorphbox/tool-url'
+import { uuidTool } from '@pastemorphbox/tool-uuid'
 
 export const toolModules = [
   timeTool,
@@ -15,7 +18,10 @@ export const toolModules = [
   jsonTool,
   urlTool,
   base64Tool,
-  developerTool,
+  jwtTool,
+  uuidTool,
+  hashTool,
+  htmlEntitiesTool,
   extractTool,
   tableTool,
   textTool,
@@ -44,6 +50,7 @@ const categoryLabels = {
 } satisfies Record<ToolCategory, string>
 
 const categoryOrder: ToolCategory[] = ['clean', 'extract', 'convert', 'inspect', 'table', 'developer']
+const derivedConfidencePenalty = 0.08
 
 type DerivedCandidate = {
   source: string
@@ -58,7 +65,7 @@ export function detectAll(input: string): AnyToolMatch[] {
       matchId: `derived:${index}:${match.matchId}`,
       title: `${match.title} from ${candidate.label}`,
       subtitle: `${match.subtitle}; derived from ${candidate.label}`,
-      confidence: Math.max(0, match.confidence - 0.08),
+      confidence: Math.max(0, match.confidence - derivedConfidencePenalty),
     })),
   )
 
@@ -111,7 +118,7 @@ function deriveCandidates(input: string): DerivedCandidate[] {
 
   for (const value of extractUrlParamValues(source)) {
     addCandidate(candidates, value, 'URL query parameter', source)
-    addCandidate(candidates, decodePercent(value), 'decoded URL query parameter', source)
+    addCandidate(candidates, decodeUrlComponentValue(value), 'decoded URL query parameter', source)
   }
 
   addCandidate(candidates, decodeBase64(source), 'Base64 decoded input', source)
@@ -146,9 +153,25 @@ function decodePercent(source: string): string | null {
 function extractUrlParamValues(source: string): string[] {
   try {
     const url = new URL(/^https?:\/\//i.test(source) ? source : `https://${source}`)
-    return Array.from(url.searchParams.values()).filter(Boolean)
+    return url.search
+      .slice(1)
+      .split('&')
+      .map((part) => part.split('=')[1] ?? '')
+      .filter(Boolean)
   } catch {
     return []
+  }
+}
+
+function decodeUrlComponentValue(source: string): string | null {
+  if (!/%[0-9a-f]{2}|\+/i.test(source)) {
+    return null
+  }
+
+  try {
+    return decodeURIComponent(source.replace(/\+/g, '%20'))
+  } catch {
+    return null
   }
 }
 
