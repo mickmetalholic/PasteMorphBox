@@ -1,6 +1,7 @@
 import { runToolDetections, type AnyToolMatch, type AnyToolModule, type ToolCategory, type ToolExample } from '@pastemorphbox/core'
 import { base64Tool } from '@pastemorphbox/tool-base64'
 import { colorTool } from '@pastemorphbox/tool-color'
+import { developerTool } from '@pastemorphbox/tool-developer'
 import { extractTool } from '@pastemorphbox/tool-extract'
 import { jsonTool } from '@pastemorphbox/tool-json'
 import { tableTool } from '@pastemorphbox/tool-table'
@@ -8,7 +9,17 @@ import { textTool } from '@pastemorphbox/tool-text'
 import { timeTool } from '@pastemorphbox/tool-time'
 import { urlTool } from '@pastemorphbox/tool-url'
 
-export const toolModules = [timeTool, colorTool, jsonTool, urlTool, base64Tool, extractTool, tableTool, textTool] satisfies AnyToolModule[]
+export const toolModules = [
+  timeTool,
+  colorTool,
+  jsonTool,
+  urlTool,
+  base64Tool,
+  developerTool,
+  extractTool,
+  tableTool,
+  textTool,
+] satisfies AnyToolModule[]
 
 export type RegisteredToolExample = ToolExample & {
   toolId: string
