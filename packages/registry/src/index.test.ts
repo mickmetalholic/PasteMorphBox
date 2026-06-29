@@ -3,7 +3,7 @@ import { detectAll, getNoMatchSuggestions, getToolExampleGroups, getToolExamples
 
 describe('registry', () => {
   it('registers the MVP tool modules in display order', () => {
-    expect(toolModules.map((tool) => tool.id)).toEqual(['time', 'color', 'json', 'url', 'base64'])
+    expect(toolModules.map((tool) => tool.id)).toEqual(['time', 'color', 'json', 'url', 'base64', 'text'])
   })
 
   it('detects input through the registered modules', () => {
@@ -11,6 +11,13 @@ describe('registry', () => {
 
     expect(match?.toolId).toBe('json')
     expect(match?.confidence).toBeGreaterThan(0.9)
+  })
+
+  it('keeps the text tool behind specialized matches', () => {
+    const matches = detectAll('{"id":1}')
+
+    expect(matches.map((match) => match.toolId)).toContain('text')
+    expect(matches[0]?.toolId).toBe('json')
   })
 
   it('looks up modules by tool id', () => {
