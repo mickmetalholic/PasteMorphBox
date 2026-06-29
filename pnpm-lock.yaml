@@ -115,6 +115,9 @@ importers:
       '@pastemorphbox/tool-json':
         specifier: workspace:*
         version: link:../tool-json
+      '@pastemorphbox/tool-table':
+        specifier: workspace:*
+        version: link:../tool-table
       '@pastemorphbox/tool-text':
         specifier: workspace:*
         version: link:../tool-text
@@ -202,6 +205,25 @@ importers:
         version: 4.1.9(@types/node@24.13.2)(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0))
 
   packages/tool-json:
+    dependencies:
+      '@pastemorphbox/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@pastemorphbox/config-ts':
+        specifier: workspace:*
+        version: link:../config-ts
+      oxlint:
+        specifier: ^1.69.0
+        version: 1.71.0
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.3
+      vitest:
+        specifier: ^4.0.16
+        version: 4.1.9(@types/node@24.13.2)(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0))
+
+  packages/tool-table:
     dependencies:
       '@pastemorphbox/core':
         specifier: workspace:*
