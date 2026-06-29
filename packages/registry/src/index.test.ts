@@ -3,7 +3,7 @@ import { detectAll, getNoMatchSuggestions, getToolExampleGroups, getToolExamples
 
 describe('registry', () => {
   it('registers the MVP tool modules in display order', () => {
-    expect(toolModules.map((tool) => tool.id)).toEqual(['time', 'color', 'json', 'url', 'base64', 'extract', 'text'])
+    expect(toolModules.map((tool) => tool.id)).toEqual(['time', 'color', 'json', 'url', 'base64', 'extract', 'table', 'text'])
   })
 
   it('detects input through the registered modules', () => {
@@ -28,6 +28,16 @@ describe('registry', () => {
     expect(extractIndex).toBeGreaterThanOrEqual(0)
     expect(textIndex).toBeGreaterThanOrEqual(0)
     expect(extractIndex).toBeLessThan(textIndex)
+  })
+
+  it('keeps table conversion ahead of generic text cleanup', () => {
+    const matches = detectAll('name,role\nMika,Admin')
+    const tableIndex = matches.findIndex((match) => match.toolId === 'table')
+    const textIndex = matches.findIndex((match) => match.toolId === 'text')
+
+    expect(tableIndex).toBeGreaterThanOrEqual(0)
+    expect(textIndex).toBeGreaterThanOrEqual(0)
+    expect(tableIndex).toBeLessThan(textIndex)
   })
 
   it('looks up modules by tool id', () => {
