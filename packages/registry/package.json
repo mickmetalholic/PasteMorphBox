@@ -17,6 +17,7 @@
     "@pastemorphbox/core": "workspace:*",
     "@pastemorphbox/tool-base64": "workspace:*",
     "@pastemorphbox/tool-color": "workspace:*",
+    "@pastemorphbox/tool-developer": "workspace:*",
     "@pastemorphbox/tool-extract": "workspace:*",
     "@pastemorphbox/tool-json": "workspace:*",
     "@pastemorphbox/tool-table": "workspace:*",
