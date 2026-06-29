@@ -56,6 +56,30 @@ describe('registry', () => {
     expect(matches[0]?.toolId).toBe('developer')
   })
 
+  it('detects JSON from percent-decoded input', () => {
+    const matches = detectAll('%7B%22id%22%3A1%7D')
+    const jsonMatch = matches.find((match) => match.toolId === 'json')
+
+    expect(jsonMatch?.source).toBe('{"id":1}')
+    expect(jsonMatch?.title).toContain('percent-decoded input')
+  })
+
+  it('detects JSON from Base64 decoded input', () => {
+    const matches = detectAll('eyJpZCI6MX0=')
+    const jsonMatch = matches.find((match) => match.toolId === 'json')
+
+    expect(jsonMatch?.source).toBe('{"id":1}')
+    expect(jsonMatch?.title).toContain('Base64 decoded input')
+  })
+
+  it('detects JSON from a JWT payload', () => {
+    const matches = detectAll('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjMiLCJuYW1lIjoiTWlrYSJ9.signature')
+    const jsonMatch = matches.find((match) => match.toolId === 'json')
+
+    expect(jsonMatch?.source).toContain('"name":"Mika"')
+    expect(jsonMatch?.title).toContain('JWT payload')
+  })
+
   it('looks up modules by tool id', () => {
     const jsonTool = getToolModule('json')
 
