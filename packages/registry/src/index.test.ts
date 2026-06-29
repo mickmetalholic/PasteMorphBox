@@ -3,7 +3,7 @@ import { detectAll, getNoMatchSuggestions, getToolExampleGroups, getToolExamples
 
 describe('registry', () => {
   it('registers the MVP tool modules in display order', () => {
-    expect(toolModules.map((tool) => tool.id)).toEqual(['time', 'color', 'json', 'url', 'base64', 'text'])
+    expect(toolModules.map((tool) => tool.id)).toEqual(['time', 'color', 'json', 'url', 'base64', 'extract', 'text'])
   })
 
   it('detects input through the registered modules', () => {
@@ -18,6 +18,16 @@ describe('registry', () => {
 
     expect(matches.map((match) => match.toolId)).toContain('text')
     expect(matches[0]?.toolId).toBe('json')
+  })
+
+  it('keeps extraction ahead of generic text cleanup', () => {
+    const matches = detectAll('Email mika@example.com about $50')
+    const extractIndex = matches.findIndex((match) => match.toolId === 'extract')
+    const textIndex = matches.findIndex((match) => match.toolId === 'text')
+
+    expect(extractIndex).toBeGreaterThanOrEqual(0)
+    expect(textIndex).toBeGreaterThanOrEqual(0)
+    expect(extractIndex).toBeLessThan(textIndex)
   })
 
   it('looks up modules by tool id', () => {
