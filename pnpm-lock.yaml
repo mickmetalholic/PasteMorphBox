@@ -109,15 +109,21 @@ importers:
       '@pastemorphbox/tool-color':
         specifier: workspace:*
         version: link:../tool-color
-      '@pastemorphbox/tool-developer':
-        specifier: workspace:*
-        version: link:../tool-developer
       '@pastemorphbox/tool-extract':
         specifier: workspace:*
         version: link:../tool-extract
+      '@pastemorphbox/tool-hash':
+        specifier: workspace:*
+        version: link:../tool-hash
+      '@pastemorphbox/tool-html-entities':
+        specifier: workspace:*
+        version: link:../tool-html-entities
       '@pastemorphbox/tool-json':
         specifier: workspace:*
         version: link:../tool-json
+      '@pastemorphbox/tool-jwt':
+        specifier: workspace:*
+        version: link:../tool-jwt
       '@pastemorphbox/tool-table':
         specifier: workspace:*
         version: link:../tool-table
@@ -130,6 +136,9 @@ importers:
       '@pastemorphbox/tool-url':
         specifier: workspace:*
         version: link:../tool-url
+      '@pastemorphbox/tool-uuid':
+        specifier: workspace:*
+        version: link:../tool-uuid
     devDependencies:
       '@pastemorphbox/config-ts':
         specifier: workspace:*
@@ -188,25 +197,6 @@ importers:
         specifier: ^4.0.16
         version: 4.1.9(@types/node@24.13.2)(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0))
 
-  packages/tool-developer:
-    dependencies:
-      '@pastemorphbox/core':
-        specifier: workspace:*
-        version: link:../core
-    devDependencies:
-      '@pastemorphbox/config-ts':
-        specifier: workspace:*
-        version: link:../config-ts
-      oxlint:
-        specifier: ^1.69.0
-        version: 1.71.0
-      typescript:
-        specifier: ~6.0.2
-        version: 6.0.3
-      vitest:
-        specifier: ^4.0.16
-        version: 4.1.9(@types/node@24.13.2)(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0))
-
   packages/tool-extract:
     dependencies:
       '@pastemorphbox/core':
@@ -226,7 +216,64 @@ importers:
         specifier: ^4.0.16
         version: 4.1.9(@types/node@24.13.2)(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0))
 
+  packages/tool-hash:
+    dependencies:
+      '@pastemorphbox/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@pastemorphbox/config-ts':
+        specifier: workspace:*
+        version: link:../config-ts
+      oxlint:
+        specifier: ^1.69.0
+        version: 1.71.0
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.3
+      vitest:
+        specifier: ^4.0.16
+        version: 4.1.9(@types/node@24.13.2)(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0))
+
+  packages/tool-html-entities:
+    dependencies:
+      '@pastemorphbox/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@pastemorphbox/config-ts':
+        specifier: workspace:*
+        version: link:../config-ts
+      oxlint:
+        specifier: ^1.69.0
+        version: 1.71.0
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.3
+      vitest:
+        specifier: ^4.0.16
+        version: 4.1.9(@types/node@24.13.2)(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0))
+
   packages/tool-json:
+    dependencies:
+      '@pastemorphbox/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@pastemorphbox/config-ts':
+        specifier: workspace:*
+        version: link:../config-ts
+      oxlint:
+        specifier: ^1.69.0
+        version: 1.71.0
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.3
+      vitest:
+        specifier: ^4.0.16
+        version: 4.1.9(@types/node@24.13.2)(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0))
+
+  packages/tool-jwt:
     dependencies:
       '@pastemorphbox/core':
         specifier: workspace:*
@@ -303,6 +350,25 @@ importers:
         version: 4.1.9(@types/node@24.13.2)(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0))
 
   packages/tool-url:
+    dependencies:
+      '@pastemorphbox/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@pastemorphbox/config-ts':
+        specifier: workspace:*
+        version: link:../config-ts
+      oxlint:
+        specifier: ^1.69.0
+        version: 1.71.0
+      typescript:
+        specifier: ~6.0.2
+        version: 6.0.3
+      vitest:
+        specifier: ^4.0.16
+        version: 4.1.9(@types/node@24.13.2)(vite@8.1.0(@types/node@24.13.2)(jiti@2.7.0))
+
+  packages/tool-uuid:
     dependencies:
       '@pastemorphbox/core':
         specifier: workspace:*

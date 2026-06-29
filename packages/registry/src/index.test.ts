@@ -9,7 +9,10 @@ describe('registry', () => {
       'json',
       'url',
       'base64',
-      'developer',
+      'jwt',
+      'uuid',
+      'hash',
+      'html-entities',
       'extract',
       'table',
       'text',
@@ -50,10 +53,16 @@ describe('registry', () => {
     expect(tableIndex).toBeLessThan(textIndex)
   })
 
-  it('detects developer utility values', () => {
+  it('detects split developer utility values', () => {
+    const jwtMatches = detectAll('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjMiLCJuYW1lIjoiTWlrYSJ9.signature')
     const matches = detectAll('550e8400-e29b-41d4-a716-446655440000')
+    const hashMatches = detectAll('d41d8cd98f00b204e9800998ecf8427e')
+    const htmlMatches = detectAll('Tom &amp; Jerry &lt;3')
 
-    expect(matches[0]?.toolId).toBe('developer')
+    expect(jwtMatches[0]?.toolId).toBe('jwt')
+    expect(matches[0]?.toolId).toBe('uuid')
+    expect(hashMatches[0]?.toolId).toBe('hash')
+    expect(htmlMatches.some((match) => match.toolId === 'html-entities')).toBe(true)
   })
 
   it('detects JSON from percent-decoded input', () => {
@@ -62,6 +71,15 @@ describe('registry', () => {
 
     expect(jsonMatch?.source).toBe('{"id":1}')
     expect(jsonMatch?.title).toContain('percent-decoded input')
+    expect(jsonMatch?.confidence).toBeLessThan(0.92)
+  })
+
+  it('detects JSON from a decoded URL query parameter', () => {
+    const matches = detectAll('https://example.com/?payload=%7B%22id%22%3A1%7D')
+    const jsonMatch = matches.find((match) => match.toolId === 'json')
+
+    expect(jsonMatch?.source).toBe('{"id":1}')
+    expect(jsonMatch?.title).toContain('decoded URL query parameter')
   })
 
   it('detects JSON from Base64 decoded input', () => {
@@ -72,12 +90,27 @@ describe('registry', () => {
     expect(jsonMatch?.title).toContain('Base64 decoded input')
   })
 
+  it('detects JSON from Base64URL decoded input', () => {
+    const matches = detectAll('eyJpZCI6MX0')
+    const jsonMatch = matches.find((match) => match.toolId === 'json')
+
+    expect(jsonMatch?.source).toBe('{"id":1}')
+    expect(jsonMatch?.title).toContain('Base64URL decoded input')
+  })
+
   it('detects JSON from a JWT payload', () => {
     const matches = detectAll('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjMiLCJuYW1lIjoiTWlrYSJ9.signature')
     const jsonMatch = matches.find((match) => match.toolId === 'json')
 
     expect(jsonMatch?.source).toContain('"name":"Mika"')
     expect(jsonMatch?.title).toContain('JWT payload')
+  })
+
+  it('does not duplicate repeated derived sources', () => {
+    const matches = detectAll('https://example.com/?a=%7B%22id%22%3A1%7D&b=%7B%22id%22%3A1%7D')
+    const jsonMatches = matches.filter((match) => match.toolId === 'json' && match.source === '{"id":1}')
+
+    expect(jsonMatches).toHaveLength(1)
   })
 
   it('looks up modules by tool id', () => {

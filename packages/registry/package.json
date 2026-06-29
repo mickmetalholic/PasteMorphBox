@@ -17,13 +17,16 @@
     "@pastemorphbox/core": "workspace:*",
     "@pastemorphbox/tool-base64": "workspace:*",
     "@pastemorphbox/tool-color": "workspace:*",
-    "@pastemorphbox/tool-developer": "workspace:*",
     "@pastemorphbox/tool-extract": "workspace:*",
+    "@pastemorphbox/tool-hash": "workspace:*",
+    "@pastemorphbox/tool-html-entities": "workspace:*",
     "@pastemorphbox/tool-json": "workspace:*",
+    "@pastemorphbox/tool-jwt": "workspace:*",
     "@pastemorphbox/tool-table": "workspace:*",
     "@pastemorphbox/tool-text": "workspace:*",
     "@pastemorphbox/tool-time": "workspace:*",
-    "@pastemorphbox/tool-url": "workspace:*"
+    "@pastemorphbox/tool-url": "workspace:*",
+    "@pastemorphbox/tool-uuid": "workspace:*"
   },
   "devDependencies": {
     "@pastemorphbox/config-ts": "workspace:*",
