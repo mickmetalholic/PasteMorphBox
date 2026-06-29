@@ -1,6 +1,4 @@
-# Smart Input Spec
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Original input preservation
 

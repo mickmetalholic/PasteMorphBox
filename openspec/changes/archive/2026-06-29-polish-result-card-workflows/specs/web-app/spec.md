@@ -1,6 +1,24 @@
-# Web App Spec
+## ADDED Requirements
 
-## Requirements
+### Requirement: Result card bulk copy
+
+Each result card SHALL provide a bulk copy action for its result fields.
+
+#### Scenario: Copy all card fields
+
+- **WHEN** the user activates a card bulk copy action
+- **THEN** the app SHALL copy the card field labels and values to the clipboard.
+
+### Requirement: Result field folding
+
+Cards with many result fields SHALL be folded by default with an explicit expansion control.
+
+#### Scenario: Many fields
+
+- **WHEN** a result card has more than six fields
+- **THEN** the app SHALL initially show a subset of fields and provide a control to show all fields.
+
+## MODIFIED Requirements
 
 ### Requirement: Smart input first screen
 
@@ -29,24 +47,6 @@ Each visible result field SHALL provide a copy action.
 
 - **WHEN** the user clicks a field copy button
 - **THEN** the app SHALL copy that field value to the clipboard.
-
-### Requirement: Result card bulk copy
-
-Each result card SHALL provide a bulk copy action for its result fields.
-
-#### Scenario: Copy all card fields
-
-- **WHEN** the user activates a card bulk copy action
-- **THEN** the app SHALL copy the card field labels and values to the clipboard.
-
-### Requirement: Result field folding
-
-Cards with many result fields SHALL be folded by default with an explicit expansion control.
-
-#### Scenario: Many fields
-
-- **WHEN** a result card has more than six fields
-- **THEN** the app SHALL initially show a subset of fields and provide a control to show all fields.
 
 ### Requirement: No-match guidance
 
