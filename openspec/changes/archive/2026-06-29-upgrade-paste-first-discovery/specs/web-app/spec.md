@@ -1,6 +1,4 @@
-# Web App Spec
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Smart input first screen
 
@@ -22,13 +20,14 @@ The app SHALL open directly to a smart input experience with paste examples and 
 - **THEN** the app SHALL show grouped paste scenarios without navigating away from the smart input.
 
 ### Requirement: Field copy
-
 Each visible result field SHALL provide a copy action.
 
 #### Scenario: Copy field
 
 - **WHEN** the user clicks a field copy button
 - **THEN** the app SHALL copy that field value to the clipboard.
+
+## ADDED Requirements
 
 ### Requirement: No-match guidance
 
