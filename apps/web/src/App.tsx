@@ -26,7 +26,7 @@ export function App() {
 
   function updateInput(next: string) {
     setInput(next)
-    replaceQueryInput(next)
+    clearQueryInput()
   }
 
   function tryExample(example: RegisteredToolExample) {
@@ -74,7 +74,11 @@ export function App() {
           />
           {examplesOpen ? <ExamplesPanel onTryExample={tryExample} /> : null}
           <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-slate-500">
-            <span>{matches.length ? `${matches.length} possible conversion${matches.length === 1 ? '' : 's'} detected` : 'No input leaves the workspace.'}</span>
+            <span>
+              {matches.length
+                ? `${matches.length} possible conversion${matches.length === 1 ? '' : 's'} detected`
+                : 'Paste content stays local and is not stored in the URL.'}
+            </span>
             {input ? (
               <button type="button" className="text-slate-600 underline-offset-4 hover:text-slate-950 hover:underline" onClick={() => updateInput('')}>
                 Clear
@@ -95,15 +99,14 @@ export function App() {
   )
 }
 
-function replaceQueryInput(value: string) {
+function clearQueryInput() {
   const url = new URL(window.location.href)
 
-  if (value) {
-    url.searchParams.set('q', value)
-  } else {
-    url.searchParams.delete('q')
+  if (!url.searchParams.has('q')) {
+    return
   }
 
+  url.searchParams.delete('q')
   window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`)
 }
 
@@ -160,12 +163,16 @@ function ToolCard({
   onApplyInput: (value: string) => void
 }) {
   const module = getToolModule(match.toolId)
+  const [copiedAll, setCopiedAll] = useState(false)
+  const [expanded, setExpanded] = useState(false)
 
   if (!module) {
     return null
   }
 
   const fields = module.getFields(cardState.state)
+  const shouldFold = fields.length > 6
+  const visibleFields = shouldFold && !expanded ? fields.slice(0, 6) : fields
   const primaryValue = module.serializePrimary(cardState.state)
 
   function editField(fieldId: string, value: string) {
@@ -179,6 +186,12 @@ function ToolCard({
       dirty: true,
       error: result.error,
     })
+  }
+
+  async function copyAllFields() {
+    await navigator.clipboard.writeText(fields.map((field) => `${field.label}\n${field.copyValue ?? field.value}`).join('\n\n'))
+    setCopiedAll(true)
+    window.setTimeout(() => setCopiedAll(false), 1200)
   }
 
   return (
@@ -196,19 +209,38 @@ function ToolCard({
           </p>
           {cardState.error ? <p className="mt-2 text-sm text-red-600">{cardState.error}</p> : null}
         </div>
-        <button
-          type="button"
-          onClick={() => onApplyInput(primaryValue)}
-          className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-slate-300 px-3 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
-        >
-          <CornerDownLeft className="size-4" />
-          Apply to input
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={copyAllFields}
+            className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-slate-300 px-3 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+          >
+            {copiedAll ? <span className="text-xs font-semibold text-cyan-700">OK</span> : <Clipboard className="size-4" />}
+            Copy all
+          </button>
+          <button
+            type="button"
+            onClick={() => onApplyInput(primaryValue)}
+            className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-slate-300 px-3 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+          >
+            <CornerDownLeft className="size-4" />
+            Apply to input
+          </button>
+        </div>
       </div>
       <div className="grid gap-3 p-4 md:grid-cols-2">
-        {fields.map((field) => (
+        {visibleFields.map((field) => (
           <FieldRow key={field.id} field={field} onEdit={editField} />
         ))}
+        {shouldFold ? (
+          <button
+            type="button"
+            onClick={() => setExpanded((current) => !current)}
+            className="inline-flex h-9 items-center justify-center rounded-md border border-slate-300 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50 md:col-span-2"
+          >
+            {expanded ? 'Show fewer fields' : `Show ${fields.length - visibleFields.length} more field${fields.length - visibleFields.length === 1 ? '' : 's'}`}
+          </button>
+        ) : null}
       </div>
     </article>
   )
