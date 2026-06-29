@@ -10,6 +10,18 @@ export const base64Tool: ToolModule<Base64State> = {
   id: 'base64',
   name: 'Base64',
   description: 'Encode and decode Base64 text.',
+  category: 'developer',
+  tags: ['base64', 'decode', 'text'],
+  examples: [
+    {
+      id: 'base64-text',
+      label: 'Base64 text',
+      description: 'Decode readable Base64 and copy the normalized value.',
+      source: 'SGVsbG8gUGFzdGVNb3JwaEJveA==',
+      suggestWhenNoMatch: true,
+      tags: ['decode'],
+    },
+  ],
   detect(input) {
     if (!looksLikeBase64(input)) {
       return []

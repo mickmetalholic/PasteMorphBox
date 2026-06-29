@@ -1,5 +1,16 @@
 export type FieldInputKind = 'text' | 'number' | 'textarea' | 'datetime-local'
 
+export type ToolCategory = 'clean' | 'extract' | 'convert' | 'inspect' | 'table' | 'developer'
+
+export type ToolExample = {
+  id: string
+  label: string
+  description: string
+  source: string
+  suggestWhenNoMatch?: boolean
+  tags?: string[]
+}
+
 export type ToolField = {
   id: string
   label: string
@@ -32,6 +43,9 @@ export type ToolModule<TState = unknown> = {
   id: string
   name: string
   description: string
+  category?: ToolCategory
+  tags?: string[]
+  examples?: ToolExample[]
   detect(input: string): Array<Omit<ToolMatch<TState>, 'toolId' | 'matchId'>>
   getFields(state: TState): ToolField[]
   applyEdit?: (state: TState, fieldId: string, value: string) => ToolEditResult<TState>
