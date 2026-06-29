@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { detectAll, getToolModule, toolModules } from './index'
+import { detectAll, getNoMatchSuggestions, getToolExampleGroups, getToolExamples, getToolModule, toolModules } from './index'
 
 describe('registry', () => {
   it('registers the MVP tool modules in display order', () => {
@@ -18,5 +18,27 @@ describe('registry', () => {
 
     expect(jsonTool?.name).toBe('JSON')
     expect(getToolModule('missing')).toBeUndefined()
+  })
+
+  it('groups examples from registered tool metadata', () => {
+    const groups = getToolExampleGroups()
+
+    expect(groups.length).toBeGreaterThan(1)
+    expect(groups.flatMap((group) => group.examples)).toHaveLength(getToolExamples().length)
+  })
+
+  it('returns no-match suggestions from example metadata', () => {
+    const suggestions = getNoMatchSuggestions()
+
+    expect(suggestions.length).toBeGreaterThan(0)
+    expect(suggestions.every((example) => example.suggestWhenNoMatch)).toBe(true)
+  })
+
+  it('keeps registered examples detectable by their owning tools', () => {
+    for (const tool of toolModules) {
+      for (const example of tool.examples ?? []) {
+        expect(tool.detect(example.source).length, `${tool.id}:${example.id}`).toBeGreaterThan(0)
+      }
+    }
   })
 })

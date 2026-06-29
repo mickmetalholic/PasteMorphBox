@@ -1,6 +1,4 @@
-# Web App Spec
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Smart input first screen
 

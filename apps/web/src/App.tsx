@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Clipboard, CornerDownLeft, HelpCircle, Sparkles, Wand2 } from 'lucide-react'
 import type { AnyToolMatch, ToolField } from '@pastemorphbox/core'
-import { detectAll, getToolModule } from '@pastemorphbox/registry'
+import { detectAll, getNoMatchSuggestions, getToolExampleGroups, getToolExamples, getToolModule, type RegisteredToolExample } from '@pastemorphbox/registry'
 import { cn } from '@pastemorphbox/ui'
-import { getExamplesByGroup, getHighlightedExamples, getNoMatchSuggestions, type PasteExample } from './discovery'
 import { Route } from './router'
 import { useInputStore } from './store'
 
@@ -30,8 +29,8 @@ export function App() {
     replaceQueryInput(next)
   }
 
-  function tryExample(example: PasteExample) {
-    updateInput(example.sample)
+  function tryExample(example: RegisteredToolExample) {
+    updateInput(example.source)
     setExamplesOpen(false)
   }
 
@@ -299,7 +298,9 @@ function EditableValue({
   )
 }
 
-function EmptyState({ onTryExample }: { onTryExample: (example: PasteExample) => void }) {
+function EmptyState({ onTryExample }: { onTryExample: (example: RegisteredToolExample) => void }) {
+  const highlightedExamples = getToolExamples().slice(0, 4)
+
   return (
     <section className="rounded-lg border border-dashed border-slate-300 bg-white p-5">
       <div className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-700">
@@ -307,7 +308,7 @@ function EmptyState({ onTryExample }: { onTryExample: (example: PasteExample) =>
         Try a paste scenario
       </div>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-        {getHighlightedExamples().map((example) => (
+        {highlightedExamples.map((example) => (
           <ExampleButton key={example.id} example={example} onTryExample={onTryExample} />
         ))}
       </div>
@@ -315,15 +316,15 @@ function EmptyState({ onTryExample }: { onTryExample: (example: PasteExample) =>
   )
 }
 
-function ExamplesPanel({ onTryExample }: { onTryExample: (example: PasteExample) => void }) {
+function ExamplesPanel({ onTryExample }: { onTryExample: (example: RegisteredToolExample) => void }) {
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
       <div className="grid gap-4 md:grid-cols-3">
-        {getExamplesByGroup().map(([group, examples]) => (
-          <div key={group} className="space-y-2">
-            <h2 className="text-sm font-semibold text-slate-950">{group}</h2>
+        {getToolExampleGroups().map((group) => (
+          <div key={group.category} className="space-y-2">
+            <h2 className="text-sm font-semibold text-slate-950">{group.label}</h2>
             <div className="grid gap-2">
-              {examples.map((example) => (
+              {group.examples.map((example) => (
                 <ExampleButton key={example.id} example={example} onTryExample={onTryExample} />
               ))}
             </div>
@@ -334,7 +335,7 @@ function ExamplesPanel({ onTryExample }: { onTryExample: (example: PasteExample)
   )
 }
 
-function NoMatchGuidance({ onTryExample }: { onTryExample: (example: PasteExample) => void }) {
+function NoMatchGuidance({ onTryExample }: { onTryExample: (example: RegisteredToolExample) => void }) {
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-5">
       <div className="mb-4">
@@ -350,7 +351,13 @@ function NoMatchGuidance({ onTryExample }: { onTryExample: (example: PasteExampl
   )
 }
 
-function ExampleButton({ example, onTryExample }: { example: PasteExample; onTryExample: (example: PasteExample) => void }) {
+function ExampleButton({
+  example,
+  onTryExample,
+}: {
+  example: RegisteredToolExample
+  onTryExample: (example: RegisteredToolExample) => void
+}) {
   return (
     <button
       type="button"
@@ -359,7 +366,7 @@ function ExampleButton({ example, onTryExample }: { example: PasteExample; onTry
     >
       <span className="block text-sm font-semibold text-slate-950">{example.label}</span>
       <span className="mt-1 block text-sm leading-5 text-slate-600">{example.description}</span>
-      <code className="mt-2 block truncate rounded bg-white px-2 py-1 font-mono text-xs text-slate-500">{example.sample}</code>
+      <code className="mt-2 block truncate rounded bg-white px-2 py-1 font-mono text-xs text-slate-500">{example.source}</code>
     </button>
   )
 }
