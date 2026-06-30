@@ -7,11 +7,26 @@ describe('jsonTool', () => {
 
     expect(match?.state.valid).toBe(true)
     expect(match?.state.formatted).toContain('"id": 1')
+    expect(match?.state.compact).toBe('{"id":1}')
+    expect(jsonTool.serializePrimary(match!.state)).toBe('{\n  "id": 1\n}')
   })
 
   it('reports invalid JSON-like input', () => {
     const [match] = jsonTool.detect('{"id":}')
 
     expect(match?.state.valid).toBe(false)
+    expect(jsonTool.getFields(match!.state).map((field) => field.id)).toEqual(['summary', 'error'])
+    expect(jsonTool.serializePrimary(match!.state)).toBe('{"id":}')
+  })
+
+  it('summarizes JSON arrays', () => {
+    const [match] = jsonTool.detect('[{"id":1},{"id":2}]')
+
+    expect(match?.state.summary).toBe('Array with 2 items')
+    expect(jsonTool.getFields(match!.state).find((field) => field.id === 'compact')?.value).toBe('[{"id":1},{"id":2}]')
+  })
+
+  it('ignores non-JSON text', () => {
+    expect(jsonTool.detect('id: 1')).toEqual([])
   })
 })

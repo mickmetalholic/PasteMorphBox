@@ -21,13 +21,22 @@ PasteMorphBox is a paste-first conversion toolbox. Paste text once, let the app 
 
 ## Commands
 
+Use Node 24, as declared in `.nvmrc`, with the pnpm version declared by `packageManager` in `package.json`.
+
 ```bash
 pnpm install
 pnpm dev
+```
+
+Before considering changes complete, run the same local checks expected by CI:
+
+```bash
 pnpm test
 pnpm typecheck
 pnpm build
 ```
+
+If `pnpm test` fails before running tests with an error like `node: not found`, fix the shell runtime first so `node --version` resolves to Node 24, then rerun the checks.
 
 ## Deployment
 
