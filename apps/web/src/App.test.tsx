@@ -1,5 +1,5 @@
 import { RouterProvider, createMemoryHistory } from '@tanstack/react-router'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createAppRouter } from './router'
@@ -60,7 +60,7 @@ describe('App interactions', () => {
     const { user } = await renderApp()
 
     await user.click(screen.getByRole('button', { name: /Examples/i }))
-    await user.click(screen.getByText('URL parts').closest('button')!)
+    await user.click(within(screen.getByRole('region', { name: 'Examples' })).getByText('URL parts').closest('button')!)
 
     expect(smartInput().value).toBe('https://example.com/orders?id=42&status=ready#details')
     await screen.findByText('URL conversion')
