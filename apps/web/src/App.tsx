@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Clipboard, CornerDownLeft, HelpCircle, Sparkles, Wand2 } from 'lucide-react'
 import type { AnyToolMatch, ToolField } from '@pastemorphbox/core'
-import { detectAll, getNoMatchSuggestions, getToolExampleGroups, getToolExamples, getToolModule, type RegisteredToolExample } from '@pastemorphbox/registry'
+import {
+  detectAll,
+  getNoMatchSuggestions,
+  getStarterExamples,
+  getToolExamplePreviewGroups,
+  getToolModule,
+  type RegisteredToolExample,
+} from '@pastemorphbox/registry'
 import { cn } from '@pastemorphbox/ui'
 import { Route } from './router'
 import { useInputStore } from './store'
@@ -67,7 +74,7 @@ export function App() {
             id="smart-input"
             value={input}
             onChange={(event) => updateInput(event.target.value)}
-            placeholder="Paste JSON, a URL, timestamp, color, Base64, or messy text..."
+            placeholder="Paste JSON, URLs, JWTs, tables, Base64, timestamps, colors, IDs, hashes, or messy notes..."
             rows={5}
             className="min-h-36 w-full resize-y rounded-lg border border-slate-300 bg-white p-4 font-mono text-base leading-6 text-slate-950 shadow-sm outline-none transition focus:border-cyan-600 focus:ring-4 focus:ring-cyan-100"
             spellCheck={false}
@@ -331,7 +338,7 @@ function EditableValue({
 }
 
 function EmptyState({ onTryExample }: { onTryExample: (example: RegisteredToolExample) => void }) {
-  const highlightedExamples = getToolExamples().slice(0, 4)
+  const highlightedExamples = getStarterExamples()
 
   return (
     <section className="rounded-lg border border-dashed border-slate-300 bg-white p-5">
@@ -339,7 +346,7 @@ function EmptyState({ onTryExample }: { onTryExample: (example: RegisteredToolEx
         <Wand2 className="size-4 text-cyan-600" />
         Try a paste scenario
       </div>
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {highlightedExamples.map((example) => (
           <ExampleButton key={example.id} example={example} onTryExample={onTryExample} />
         ))}
@@ -352,9 +359,12 @@ function ExamplesPanel({ onTryExample }: { onTryExample: (example: RegisteredToo
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
       <div className="grid gap-4 md:grid-cols-3">
-        {getToolExampleGroups().map((group) => (
+        {getToolExamplePreviewGroups(2).map((group) => (
           <div key={group.category} className="space-y-2">
-            <h2 className="text-sm font-semibold text-slate-950">{group.label}</h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-sm font-semibold text-slate-950">{group.label}</h2>
+              <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-500">{group.totalExamples}</span>
+            </div>
             <div className="grid gap-2">
               {group.examples.map((example) => (
                 <ExampleButton key={example.id} example={example} onTryExample={onTryExample} />
@@ -372,9 +382,9 @@ function NoMatchGuidance({ onTryExample }: { onTryExample: (example: RegisteredT
     <section className="rounded-lg border border-slate-200 bg-white p-5">
       <div className="mb-4">
         <h2 className="text-base font-semibold text-slate-950">No strong match yet</h2>
-        <p className="mt-1 text-sm text-slate-500">Try a known paste shape while broader text cleanup and extraction tools are added.</p>
+        <p className="mt-1 text-sm text-slate-500">Try a known paste shape or simplify the input.</p>
       </div>
-      <div className="grid gap-2 sm:grid-cols-3">
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {getNoMatchSuggestions().map((example) => (
           <ExampleButton key={example.id} example={example} onTryExample={onTryExample} />
         ))}
