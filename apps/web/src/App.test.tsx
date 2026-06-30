@@ -2,7 +2,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { App } from './App'
-import { useInputStore } from './store'
+import { useInputStore } from './store/input-store'
 
 const clipboardWriteText = vi.fn<() => Promise<void>>(() => Promise.resolve())
 const navigationMock = vi.hoisted(() => ({
