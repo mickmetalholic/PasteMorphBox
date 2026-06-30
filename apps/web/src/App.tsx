@@ -357,7 +357,7 @@ function EmptyState({ onTryExample }: { onTryExample: (example: RegisteredToolEx
 
 function ExamplesPanel({ onTryExample }: { onTryExample: (example: RegisteredToolExample) => void }) {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+    <section aria-label="Examples" className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
       <div className="grid gap-4 md:grid-cols-3">
         {getToolExamplePreviewGroups(2).map((group) => (
           <div key={group.category} className="space-y-2">
