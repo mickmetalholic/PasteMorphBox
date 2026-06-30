@@ -1,5 +1,8 @@
+'use client'
+
 import { useEffect, useMemo, useState } from 'react'
 import { Clipboard, CornerDownLeft, HelpCircle, Sparkles, Wand2 } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
 import type { AnyToolMatch, ToolField } from '@pastemorphbox/core'
 import {
   detectAll,
@@ -10,7 +13,6 @@ import {
   type RegisteredToolExample,
 } from '@pastemorphbox/registry'
 import { cn } from '@pastemorphbox/ui'
-import { Route } from './router'
 import { useInputStore } from './store'
 
 type CardState = {
@@ -20,14 +22,15 @@ type CardState = {
 }
 
 export function App() {
-  const search = Route.useSearch()
+  const searchParams = useSearchParams()
+  const queryInput = searchParams.get('q')
   const input = useInputStore((store) => store.input)
   const setInput = useInputStore((store) => store.setInput)
   const [examplesOpen, setExamplesOpen] = useState(false)
 
   useEffect(() => {
-    setInput(search.q === undefined ? '' : String(search.q))
-  }, [search.q, setInput])
+    setInput(queryInput ?? '')
+  }, [queryInput, setInput])
 
   const matches = useMemo(() => detectAll(input), [input])
 

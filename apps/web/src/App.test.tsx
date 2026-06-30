@@ -1,11 +1,17 @@
-import { RouterProvider, createMemoryHistory } from '@tanstack/react-router'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createAppRouter } from './router'
+import { App } from './App'
 import { useInputStore } from './store'
 
 const clipboardWriteText = vi.fn<() => Promise<void>>(() => Promise.resolve())
+const navigationMock = vi.hoisted(() => ({
+  searchParams: new URLSearchParams(),
+}))
+
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => navigationMock.searchParams,
+}))
 
 function installClipboardMock() {
   Object.defineProperty(navigator, 'clipboard', {
@@ -25,12 +31,12 @@ beforeEach(() => {
 
 async function renderApp(path = '/') {
   window.history.replaceState(null, '', path)
+  navigationMock.searchParams = new URL(path, 'http://localhost').searchParams
 
-  const router = createAppRouter(createMemoryHistory({ initialEntries: [path] }))
   const user = userEvent.setup()
   installClipboardMock()
 
-  render(<RouterProvider router={router} />)
+  render(<App />)
 
   await screen.findByLabelText('Smart input')
 

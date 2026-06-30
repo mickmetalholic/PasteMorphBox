@@ -1,6 +1,6 @@
 # PasteMorphBox Web
 
-React/Vite frontend for the PasteMorphBox MVP.
+Next.js static frontend for the PasteMorphBox MVP.
 
 ```bash
 pnpm --filter @pastemorphbox/web dev
