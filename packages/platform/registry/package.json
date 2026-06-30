@@ -1,0 +1,37 @@
+{
+  "name": "@pastemorphbox/registry",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "oxlint -c ../../../.oxlintrc.json src",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@pastemorphbox/core": "workspace:*",
+    "@pastemorphbox/tool-base64": "workspace:*",
+    "@pastemorphbox/tool-color": "workspace:*",
+    "@pastemorphbox/tool-extract": "workspace:*",
+    "@pastemorphbox/tool-hash": "workspace:*",
+    "@pastemorphbox/tool-html-entities": "workspace:*",
+    "@pastemorphbox/tool-json": "workspace:*",
+    "@pastemorphbox/tool-jwt": "workspace:*",
+    "@pastemorphbox/tool-table": "workspace:*",
+    "@pastemorphbox/tool-text": "workspace:*",
+    "@pastemorphbox/tool-time": "workspace:*",
+    "@pastemorphbox/tool-url": "workspace:*",
+    "@pastemorphbox/tool-uuid": "workspace:*"
+  },
+  "devDependencies": {
+    "@pastemorphbox/config-ts": "workspace:*",
+    "oxlint": "^1.69.0",
+    "typescript": "~6.0.2",
+    "vitest": "^4.0.16"
+  }
+}
