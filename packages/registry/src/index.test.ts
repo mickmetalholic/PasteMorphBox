@@ -74,6 +74,16 @@ describe('registry', () => {
     expect(jsonMatch?.confidence).toBeLessThan(0.92)
   })
 
+  it('keeps specialized derived matches ahead of generic direct matches', () => {
+    const matches = detectAll('%7B%22id%22%3A1%7D')
+    const jsonIndex = matches.findIndex((match) => match.toolId === 'json')
+    const urlIndex = matches.findIndex((match) => match.toolId === 'url')
+
+    expect(jsonIndex).toBeGreaterThanOrEqual(0)
+    expect(urlIndex).toBeGreaterThanOrEqual(0)
+    expect(jsonIndex).toBeLessThan(urlIndex)
+  })
+
   it('detects JSON from a decoded URL query parameter', () => {
     const matches = detectAll('https://example.com/?payload=%7B%22id%22%3A1%7D')
     const jsonMatch = matches.find((match) => match.toolId === 'json')
@@ -139,6 +149,15 @@ describe('registry', () => {
       for (const example of tool.examples ?? []) {
         expect(tool.detect(example.source).length, `${tool.id}:${example.id}`).toBeGreaterThan(0)
       }
+    }
+  })
+
+  it('keeps registered examples detectable through the full registry', () => {
+    for (const example of getToolExamples()) {
+      expect(
+        detectAll(example.source).some((match) => match.toolId === example.toolId),
+        `${example.toolId}:${example.id}`,
+      ).toBe(true)
     }
   })
 })

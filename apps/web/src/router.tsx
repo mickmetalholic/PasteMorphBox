@@ -1,4 +1,4 @@
-import { createRootRoute, createRoute, createRouter, Outlet } from '@tanstack/react-router'
+import { createRootRoute, createRoute, createRouter, Outlet, type RouterHistory } from '@tanstack/react-router'
 import { App } from './App'
 
 type SearchParams = {
@@ -21,11 +21,16 @@ export const Route = createRoute({
   component: App,
 })
 
-const routeTree = rootRoute.addChildren([Route])
+export const routeTree = rootRoute.addChildren([Route])
 
-export const router = createRouter({
-  routeTree,
-})
+export function createAppRouter(history?: RouterHistory) {
+  return createRouter({
+    routeTree,
+    history,
+  })
+}
+
+export const router = createAppRouter()
 
 declare module '@tanstack/react-router' {
   interface Register {
