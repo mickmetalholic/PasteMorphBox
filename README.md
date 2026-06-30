@@ -12,8 +12,7 @@ PasteMorphBox is a paste-first conversion toolbox. Paste text once, let the app 
 
 ## Stack
 
-- React 19 + TypeScript + Vite
-- TanStack Router
+- Next.js static export + React 19 + TypeScript
 - Tailwind CSS
 - Zustand
 - pnpm workspace + Turborepo
@@ -40,7 +39,7 @@ If `pnpm test` fails before running tests with an error like `node: not found`, 
 
 ## Deployment
 
-The web app builds to `apps/web/dist` and can be deployed to any static host.
+The Next.js web app builds to static assets in `apps/web/dist` and can be deployed to any static host.
 
 ### Cloudflare Pages
 

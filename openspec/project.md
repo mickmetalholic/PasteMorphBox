@@ -12,7 +12,7 @@ PasteMorphBox is a pure frontend, paste-first conversion toolbox. The product av
 
 ## Technical rules
 
-- Use React, TypeScript, Vite, TanStack Router, Tailwind CSS, Zustand, pnpm workspace, Turborepo, and Vitest.
+- Use Next.js static export, React, TypeScript, Tailwind CSS, Zustand, pnpm workspace, Turborepo, and Vitest.
 - Keep conversion capabilities in independent packages.
 - Use browser-native APIs or mature libraries for conversion logic.
 - App code may compose tools, but must not own tool-specific conversion rules.
