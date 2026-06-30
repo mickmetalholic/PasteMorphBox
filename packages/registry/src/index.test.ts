@@ -33,6 +33,13 @@ describe('registry', () => {
     expect(matches[0]?.toolId).toBe('json')
   })
 
+  it('keeps structured tools ahead of generic text cleanup', () => {
+    expect(detectAll('https://example.com/orders?id=42')[0]?.toolId).toBe('url')
+    expect(detectAll('#ff6600')[0]?.toolId).toBe('color')
+    expect(detectAll('name,role\nMika,Admin')[0]?.toolId).toBe('table')
+    expect(detectAll('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjMiLCJuYW1lIjoiTWlrYSJ9.signature')[0]?.toolId).toBe('jwt')
+  })
+
   it('keeps extraction ahead of generic text cleanup', () => {
     const matches = detectAll('Email mika@example.com about $50')
     const extractIndex = matches.findIndex((match) => match.toolId === 'extract')
@@ -41,6 +48,13 @@ describe('registry', () => {
     expect(extractIndex).toBeGreaterThanOrEqual(0)
     expect(textIndex).toBeGreaterThanOrEqual(0)
     expect(extractIndex).toBeLessThan(textIndex)
+  })
+
+  it('keeps broad or weak utility matches behind stronger extraction', () => {
+    const matches = detectAll('Tom &amp; Jerry paid $50 on 2026-06-30. Email tom@example.com')
+
+    expect(matches[0]?.toolId).toBe('extract')
+    expect(matches.some((match) => match.toolId === 'html-entities')).toBe(true)
   })
 
   it('keeps table conversion ahead of generic text cleanup', () => {
@@ -112,8 +126,23 @@ describe('registry', () => {
     const matches = detectAll('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjMiLCJuYW1lIjoiTWlrYSJ9.signature')
     const jsonMatch = matches.find((match) => match.toolId === 'json')
 
+    expect(matches[0]?.toolId).toBe('jwt')
     expect(jsonMatch?.source).toContain('"name":"Mika"')
     expect(jsonMatch?.title).toContain('JWT payload')
+  })
+
+  it('keeps derived payload matches visible behind strong direct URL interpretation', () => {
+    const matches = detectAll('https://example.com/?payload=%7B%22id%22%3A1%7D')
+    const jsonMatch = matches.find((match) => match.toolId === 'json')
+
+    expect(matches[0]?.toolId).toBe('url')
+    expect(jsonMatch?.title).toContain('decoded URL query parameter')
+  })
+
+  it('still returns text cleanup for plain text fallback', () => {
+    const matches = detectAll('quarterly launch CHECKLIST')
+
+    expect(matches[0]?.toolId).toBe('text')
   })
 
   it('does not duplicate repeated derived sources', () => {

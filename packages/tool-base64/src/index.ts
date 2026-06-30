@@ -104,13 +104,20 @@ function isJwtShaped(input: string): boolean {
 }
 
 function looksLikeBase64(input: string): boolean {
+  if (/\s/.test(input)) {
+    return false
+  }
+
   const normalized = input.replace(/\s+/g, '')
   return normalized.length >= 8 && normalized.length % 4 === 0 && /^[A-Za-z0-9+/]+={0,2}$/.test(normalized)
 }
 
 function looksLikeBase64Url(input: string): boolean {
-  const normalized = input.replace(/\s+/g, '')
-  return normalized.length >= 8 && /^[A-Za-z0-9_-]+={0,2}$/.test(normalized)
+  if (/\s/.test(input)) {
+    return false
+  }
+
+  return input.length >= 8 && /^[A-Za-z0-9_-]+={0,2}$/.test(input)
 }
 
 function decodeBase64(input: string): string | null {
@@ -125,8 +132,7 @@ function decodeBase64(input: string): string | null {
 
 function decodeBase64Url(input: string): string | null {
   try {
-    const normalized = input.replace(/\s+/g, '')
-    const base64 = normalized.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(normalized.length / 4) * 4, '=')
+    const base64 = input.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(input.length / 4) * 4, '=')
     const binary = atob(base64)
     const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0))
     return new TextDecoder().decode(bytes)
