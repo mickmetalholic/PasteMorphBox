@@ -27,7 +27,7 @@ jobs:
       - name: Enable pnpm
         run: |
           corepack enable
-          corepack prepare pnpm@11.9.0 --activate
+          corepack prepare "$(node -p "require('./package.json').packageManager")" --activate
 
       - name: Get pnpm store path
         id: pnpm-store
