@@ -1,4 +1,4 @@
 {
-  "$schema": "./apps/web/node_modules/oxlint/configuration_schema.json",
+  "$schema": "https://json.schemastore.org/oxlintrc.json",
   "extends": ["./packages/config-oxlint/base.json"]
 }
