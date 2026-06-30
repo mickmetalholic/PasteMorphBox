@@ -38,6 +38,7 @@ export type ToolExampleGroup = {
   category: ToolCategory
   label: string
   examples: RegisteredToolExample[]
+  totalExamples: number
 }
 
 const categoryLabels = {
@@ -50,7 +51,22 @@ const categoryLabels = {
 } satisfies Record<ToolCategory, string>
 
 const categoryOrder: ToolCategory[] = ['clean', 'extract', 'convert', 'inspect', 'table', 'developer']
+const starterExampleKeys = ['json:json-object', 'url:url-parts', 'jwt:jwt', 'extract:customer-details', 'table:csv-rows', 'text:messy-list']
 const derivedConfidencePenalty = 0.08
+const toolRankAdjustments: Record<string, number> = {
+  json: 0.05,
+  url: 0.04,
+  jwt: 0.04,
+  color: 0.04,
+  table: 0.03,
+  base64: 0.02,
+  uuid: 0.02,
+  hash: 0.01,
+  extract: 0.01,
+  time: 0,
+  'html-entities': -0.08,
+  text: -0.14,
+}
 
 type DerivedCandidate = {
   source: string
@@ -69,7 +85,7 @@ export function detectAll(input: string): AnyToolMatch[] {
     })),
   )
 
-  return dedupeMatches([...directMatches, ...derivedMatches]).sort((a, b) => b.confidence - a.confidence)
+  return rankMatches(dedupeMatches([...directMatches, ...derivedMatches]))
 }
 
 export function getToolModule(toolId: string): AnyToolModule | undefined {
@@ -91,19 +107,43 @@ export function getToolExamples(): RegisteredToolExample[] {
 }
 
 export function getToolExampleGroups(): ToolExampleGroup[] {
+  return getToolExamplePreviewGroups(Number.POSITIVE_INFINITY)
+}
+
+export function getToolExamplePreviewGroups(limitPerGroup = 3): ToolExampleGroup[] {
   const examples = getToolExamples()
 
   return categoryOrder
-    .map((category) => ({
-      category,
-      label: categoryLabels[category],
-      examples: examples.filter((example) => example.category === category),
-    }))
+    .map((category) => {
+      const categoryExamples = examples.filter((example) => example.category === category)
+
+      return {
+        category,
+        label: categoryLabels[category],
+        examples: categoryExamples.slice(0, limitPerGroup),
+        totalExamples: categoryExamples.length,
+      }
+    })
     .filter((group) => group.examples.length > 0)
 }
 
+export function getStarterExamples(): RegisteredToolExample[] {
+  const examplesByKey = new Map(getToolExamples().map((example) => [exampleKey(example), example]))
+
+  return starterExampleKeys.flatMap((key) => {
+    const example = examplesByKey.get(key)
+    return example ? [example] : []
+  })
+}
+
 export function getNoMatchSuggestions(): RegisteredToolExample[] {
-  return getToolExamples().filter((example) => example.suggestWhenNoMatch)
+  return getToolExamples()
+    .filter((example) => example.suggestWhenNoMatch)
+    .slice(0, 6)
+}
+
+function exampleKey(example: RegisteredToolExample): string {
+  return `${example.toolId}:${example.id}`
 }
 
 function deriveCandidates(input: string): DerivedCandidate[] {
@@ -239,4 +279,22 @@ function dedupeMatches(matches: AnyToolMatch[]): AnyToolMatch[] {
   }
 
   return result
+}
+
+function rankMatches(matches: AnyToolMatch[]): AnyToolMatch[] {
+  return matches
+    .map((match, index) => ({
+      match: {
+        ...match,
+        confidence: rankConfidence(match),
+      },
+      index,
+    }))
+    .sort((left, right) => right.match.confidence - left.match.confidence || left.index - right.index)
+    .map(({ match }) => match)
+}
+
+function rankConfidence(match: AnyToolMatch): number {
+  const adjustment = toolRankAdjustments[match.toolId] ?? 0
+  return Math.max(0, Math.min(1, match.confidence + adjustment))
 }

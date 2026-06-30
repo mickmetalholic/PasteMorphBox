@@ -25,4 +25,8 @@ describe('base64Tool', () => {
   it('does not claim JWT-shaped input as standalone Base64URL', () => {
     expect(base64Tool.detect('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjMifQ.signature')).toHaveLength(0)
   })
+
+  it('ignores natural language with spaces', () => {
+    expect(base64Tool.detect('quarterly launch CHECKLIST')).toHaveLength(0)
+  })
 })
