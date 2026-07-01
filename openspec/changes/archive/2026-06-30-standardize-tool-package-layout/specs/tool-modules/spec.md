@@ -1,10 +1,4 @@
-# Tool Module Spec
-
-## Purpose
-
-Define the contract and package layout conventions for conversion tool modules.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Tool module contract
 

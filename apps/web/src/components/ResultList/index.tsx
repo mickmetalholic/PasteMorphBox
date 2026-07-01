@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { AnyToolMatch } from '@pastemorphbox/core'
+import type { CardState } from '../../types/card-state'
 import { ToolCard } from '../ToolCard'
-import type { CardState } from '../types'
 
 export function ResultList({ matches, onApplyInput }: { matches: AnyToolMatch[]; onApplyInput: (value: string) => void }) {
   const [cardStates, setCardStates] = useState<Record<string, CardState>>({})

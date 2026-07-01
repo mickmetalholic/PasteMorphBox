@@ -4,15 +4,15 @@ import { useEffect, useMemo, useState } from 'react'
 import { Sparkles } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { detectAll, type RegisteredToolExample } from '@pastemorphbox/registry'
-import { useInputStore } from '../../store/input-store'
-import { EmptyState } from './EmptyState'
-import { ExamplesPanel } from './ExamplesPanel'
-import { NoMatchGuidance } from './NoMatchGuidance'
-import { ResultList } from './ResultList'
-import { SmartInput } from './SmartInput'
-import { clearQueryInput } from './query-input'
+import { EmptyState } from './components/EmptyState'
+import { ExamplesPanel } from './components/ExamplesPanel'
+import { NoMatchGuidance } from './components/NoMatchGuidance'
+import { ResultList } from './components/ResultList'
+import { SmartInput } from './components/SmartInput'
+import { clearQueryInput } from './lib/query-input'
+import { useInputStore } from './store/input-store'
 
-export function PasteWorkbench() {
+export function PasteConverter() {
   const searchParams = useSearchParams()
   const queryInput = searchParams.get('q')
   const input = useInputStore((store) => store.input)
