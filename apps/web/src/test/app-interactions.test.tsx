@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { App } from './App'
-import { useInputStore } from './store/input-store'
+import { PasteConverter } from '../PasteConverter'
+import { useInputStore } from '../store/input-store'
 
 const clipboardWriteText = vi.fn<() => Promise<void>>(() => Promise.resolve())
 const navigationMock = vi.hoisted(() => ({
@@ -36,7 +36,7 @@ async function renderApp(path = '/') {
   const user = userEvent.setup()
   installClipboardMock()
 
-  render(<App />)
+  render(<PasteConverter />)
 
   await screen.findByLabelText('Smart input')
 

@@ -18,6 +18,23 @@ PasteMorphBox is a paste-first conversion toolbox. Paste text once, let the app 
 - pnpm workspace + Turborepo
 - Vitest
 
+## Source layout
+
+- `apps/web`: Next.js route entries, app state, layout, and rendering.
+- `apps/web/src/components`: paste experience UI components, with each component organized by directory.
+- `apps/web/src/lib`: web app local utilities.
+- `apps/web/src/types`: web app local shared types.
+- `packages/shared`: shared contracts and UI helpers.
+- `packages/platform`: cross-tool orchestration such as the registry.
+- `packages/tools/tool-*`: independent conversion capabilities.
+- `packages/config`: shared TypeScript and lint configuration.
+
+Tool packages expose their `ToolModule` from `src/index.ts`. Keep `index.ts` focused on public exports and module assembly; move non-trivial types, parsing, formatting, state building, and field helpers into focused package-local files.
+
+The web route layer stays thin: `apps/web/src/app` should delegate to the paste converter composition instead of owning workflow implementation.
+
+Package behavior tests live beside package source in each package `src` tree. Web app interaction, discovery, and route workflow tests live under `apps/web/src/test`.
+
 ## Commands
 
 Use Node 24, as declared in `.nvmrc`, with the pnpm version declared by `packageManager` in `package.json`.

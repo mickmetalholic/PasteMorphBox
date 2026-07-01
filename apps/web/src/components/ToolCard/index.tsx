@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Clipboard, CornerDownLeft } from 'lucide-react'
 import type { AnyToolMatch } from '@pastemorphbox/core'
 import { getToolModule } from '@pastemorphbox/registry'
-import type { CardState } from '../types'
+import type { CardState } from '../../types/card-state'
 import { FieldRow } from './FieldRow'
 
 export function ToolCard({

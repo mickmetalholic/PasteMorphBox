@@ -1,10 +1,10 @@
 import { Suspense } from 'react'
-import { App } from '../App'
+import { PasteConverter } from '../PasteConverter'
 
 export default function Page() {
   return (
     <Suspense fallback={<main className="min-h-svh bg-[--app-bg]" />}>
-      <App />
+      <PasteConverter />
     </Suspense>
   )
 }
