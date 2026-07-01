@@ -1,5 +1,9 @@
 # Color Tool Spec
 
+## Purpose
+
+Define color value detection and conversion behavior for paste-first CSS color workflows.
+
 ## Requirements
 
 ### Requirement: Color conversion

@@ -1,5 +1,9 @@
 # Smart Input Spec
 
+## Purpose
+
+Define smart input source preservation, explicit apply behavior, and URL query handling for the paste-first experience.
+
 ## Requirements
 
 ### Requirement: Original input preservation
