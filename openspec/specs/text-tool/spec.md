@@ -1,5 +1,9 @@
 # Text Tool Spec
 
+## Purpose
+
+Define fallback text cleanup, transformation, and statistics behavior for ordinary pasted text.
+
 ## Requirements
 
 ### Requirement: Text cleanup detection

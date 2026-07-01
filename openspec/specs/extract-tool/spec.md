@@ -1,5 +1,9 @@
 # Extract Tool Spec
 
+## Purpose
+
+Define entity extraction detection and copyable outputs for pasted text containing structured values.
+
 ## Requirements
 
 ### Requirement: Entity extraction detection

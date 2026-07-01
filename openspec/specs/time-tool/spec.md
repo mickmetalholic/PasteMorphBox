@@ -1,5 +1,9 @@
 # Time Tool Spec
 
+## Purpose
+
+Define Unix timestamp detection and conversion outputs for paste-first time workflows.
+
 ## Requirements
 
 ### Requirement: Timestamp conversion

@@ -1,5 +1,9 @@
 # Table Tool Spec
 
+## Purpose
+
+Define table and list detection plus copyable conversion outputs for pasted row-oriented text.
+
 ## Requirements
 
 ### Requirement: Table and list detection

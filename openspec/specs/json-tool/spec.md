@@ -1,5 +1,9 @@
 # JSON Tool Spec
 
+## Purpose
+
+Define JSON validation, formatting, and compacting behavior for paste-first JSON workflows.
+
 ## Requirements
 
 ### Requirement: JSON formatting
