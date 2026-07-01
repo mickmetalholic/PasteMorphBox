@@ -1,34 +1,14 @@
 import type { ToolModule } from '@pastemorphbox/core'
 import { decodeBase64, decodeBase64Url, detectBase64Kind, encodeBase64, encodeBase64Url, isMostlyPrintable } from './codec'
 import { getBase64Fields } from './fields'
+import { base64Metadata } from './metadata'
 import type { Base64State } from './types'
 
 export type { Base64State } from './types'
 export { decodePrintableBase64, decodePrintableBase64Url } from './codec'
 
 export const base64Tool: ToolModule<Base64State> = {
-  id: 'base64',
-  name: 'Base64',
-  description: 'Encode and decode Base64 and Base64URL text.',
-  category: 'developer',
-  tags: ['base64', 'base64url', 'decode', 'text'],
-  examples: [
-    {
-      id: 'base64-text',
-      label: 'Base64 text',
-      description: 'Decode readable Base64 and copy the normalized value.',
-      source: 'SGVsbG8gUGFzdGVNb3JwaEJveA==',
-      suggestWhenNoMatch: true,
-      tags: ['decode'],
-    },
-    {
-      id: 'base64url-text',
-      label: 'Base64URL text',
-      description: 'Decode URL-safe Base64 and copy the normalized value.',
-      source: 'SGVsbG8td29ybGQ',
-      tags: ['decode'],
-    },
-  ],
+  ...base64Metadata,
   detect(input) {
     const source = input.trim()
     const kind = detectBase64Kind(source)

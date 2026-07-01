@@ -1,33 +1,13 @@
 import type { ToolModule } from '@pastemorphbox/core'
 import { getTableFields } from './fields'
+import { tableMetadata } from './metadata'
 import { buildTableState, tableConfidence } from './table-state'
 import type { TableState } from './types'
 
 export type { TableState } from './types'
 
 export const tableTool: ToolModule<TableState> = {
-  id: 'table',
-  name: 'Table',
-  description: 'Convert CSV, TSV, Markdown tables, and multi-line lists.',
-  category: 'table',
-  tags: ['table', 'csv', 'tsv', 'markdown', 'list'],
-  examples: [
-    {
-      id: 'csv-rows',
-      label: 'CSV rows',
-      description: 'Convert CSV rows into Markdown, TSV, and lists.',
-      source: 'name,role\nMika,Admin\nJon,Support',
-      suggestWhenNoMatch: true,
-      tags: ['csv'],
-    },
-    {
-      id: 'markdown-table',
-      label: 'Markdown table',
-      description: 'Normalize a Markdown table into CSV and TSV.',
-      source: '| Name | Qty |\n| --- | ---: |\n| Apples | 4 |\n| Pears | 6 |',
-      tags: ['markdown'],
-    },
-  ],
+  ...tableMetadata,
   detect(input) {
     const state = buildTableState(input)
 

@@ -1,25 +1,13 @@
 import type { ToolModule } from '@pastemorphbox/core'
 import { getHtmlEntitiesFields } from './fields'
 import { decodeHtmlEntities, encodeHtmlEntities, hasHtmlEntity, hasRawHtmlCharacters } from './html-entities-state'
+import { htmlEntitiesMetadata } from './metadata'
 import type { HtmlEntitiesState } from './types'
 
 export type { HtmlEntitiesState } from './types'
 
 export const htmlEntitiesTool: ToolModule<HtmlEntitiesState> = {
-  id: 'html-entities',
-  name: 'HTML entities',
-  description: 'Decode and encode common HTML entity text.',
-  category: 'developer',
-  tags: ['html', 'entities', 'escape'],
-  examples: [
-    {
-      id: 'html-entities',
-      label: 'HTML entities',
-      description: 'Decode and encode common HTML entity text.',
-      source: 'Tom &amp; Jerry &lt;3',
-      tags: ['html'],
-    },
-  ],
+  ...htmlEntitiesMetadata,
   detect(input) {
     const source = input.trim()
     const hasEntity = hasHtmlEntity(source)
