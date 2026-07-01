@@ -27,6 +27,7 @@ export type ToolField = {
 export type ToolMatch<TState = unknown> = {
   toolId: string
   matchId: string
+  dedupeKey?: string
   title: string
   subtitle: string
   confidence: number
@@ -72,6 +73,7 @@ export function runToolDetections(input: string, modules: AnyToolModule[]): AnyT
         ...match,
         toolId: module.id,
         matchId: `${module.id}:${index}:${hashMatchSource(source)}`,
+        dedupeKey: match.dedupeKey ?? `${module.id}:${index}:${hashMatchSource(source)}`,
         confidence: clampConfidence(match.confidence),
         source,
       })),
@@ -95,4 +97,14 @@ function hashMatchSource(source: string): string {
   }
 
   return hash.toString(36)
+}
+
+export function getRequiredToolField(fields: ToolField[], fieldId: string): ToolField {
+  const field = fields.find((candidate) => candidate.id === fieldId)
+
+  if (!field) {
+    throw new Error(`Expected tool field "${fieldId}"`)
+  }
+
+  return field
 }

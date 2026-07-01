@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { getRequiredToolField } from '@pastemorphbox/core'
 import { urlTool } from './index'
 
 describe('urlTool', () => {
@@ -19,9 +20,9 @@ describe('urlTool', () => {
     const fields = urlTool.getFields(match.state)
 
     expect(match.confidence).toBeLessThan(0.8)
-    expect(fields.find((field) => field.id === 'origin')?.value).toBe('https://example.com')
-    expect(fields.find((field) => field.id === 'path')?.value).toBe('/orders')
-    expect(fields.find((field) => field.id === 'params')?.value).toBe('id: 42\nstatus: ready')
+    expect(getRequiredToolField(fields, 'origin').value).toBe('https://example.com')
+    expect(getRequiredToolField(fields, 'path').value).toBe('/orders')
+    expect(getRequiredToolField(fields, 'params').value).toBe('id: 42\nstatus: ready')
   })
 
   it('keeps malformed percent escapes stable', () => {

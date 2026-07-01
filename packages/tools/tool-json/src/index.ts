@@ -1,4 +1,5 @@
-import type { ToolField, ToolModule } from '@pastemorphbox/core'
+import type { ToolModule } from '@pastemorphbox/core'
+import { getJsonFields } from './fields'
 import { looksLikeJson, parseJson } from './json-state'
 import type { JsonState } from './types'
 
@@ -44,47 +45,7 @@ export const jsonTool: ToolModule<JsonState> = {
       },
     ]
   },
-  getFields(state) {
-    const fields: ToolField[] = [
-      {
-        id: 'summary',
-        label: 'Summary',
-        value: state.summary,
-      },
-    ]
-
-    if (!state.valid) {
-      fields.push({
-        id: 'error',
-        label: 'Error',
-        value: state.error ?? 'Invalid JSON',
-        wide: true,
-      })
-
-      return fields
-    }
-
-    fields.push(
-      {
-        id: 'formatted',
-        label: 'Formatted',
-        value: state.formatted,
-        copyValue: state.formatted,
-        inputKind: 'textarea',
-        monospace: true,
-        wide: true,
-      },
-      {
-        id: 'compact',
-        label: 'Compact',
-        value: state.compact,
-        monospace: true,
-        wide: true,
-      },
-    )
-
-    return fields
-  },
+  getFields: getJsonFields,
   serializePrimary(state) {
     return state.valid ? state.formatted : state.raw
   },

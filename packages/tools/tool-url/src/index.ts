@@ -1,8 +1,10 @@
-import type { ToolField, ToolModule } from '@pastemorphbox/core'
+import type { ToolModule } from '@pastemorphbox/core'
+import { getUrlFields } from './fields'
 import { buildUrlState, confidence, hasEscapes, looksLikeUrlWork } from './url-state'
 import type { UrlState } from './types'
 
 export type { UrlState } from './types'
+export { decodePercentText, decodeUrlParameterValue, extractUrlParamValues } from './url-state'
 
 export const urlTool: ToolModule<UrlState> = {
   id: 'url',
@@ -42,42 +44,7 @@ export const urlTool: ToolModule<UrlState> = {
       },
     ]
   },
-  getFields(state) {
-    const fields: ToolField[] = [
-      {
-        id: 'decoded',
-        label: 'Decoded',
-        value: state.decoded,
-        wide: true,
-      },
-      {
-        id: 'encoded',
-        label: 'Encoded',
-        value: state.encoded,
-        wide: true,
-        monospace: true,
-      },
-    ]
-
-    if (state.url) {
-      fields.push(
-        { id: 'origin', label: 'Origin', value: `${state.url.protocol}//${state.url.host}` },
-        { id: 'path', label: 'Path', value: state.url.pathname || '/' },
-      )
-
-      if (state.url.params) {
-        fields.push({
-          id: 'params',
-          label: 'Query params',
-          value: state.url.params,
-          wide: true,
-          monospace: true,
-        })
-      }
-    }
-
-    return fields
-  },
+  getFields: getUrlFields,
   serializePrimary(state) {
     return state.decoded
   },

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { getRequiredToolField } from '@pastemorphbox/core'
 import { colorTool } from './index'
 
 describe('colorTool', () => {
@@ -25,7 +26,7 @@ describe('colorTool', () => {
     }
 
     expect(colorTool.serializePrimary(match.state)).toBe('#ff000080')
-    expect(colorTool.getFields(match.state).find((field) => field.id === 'rgb')?.value).toBe('rgb(255 0 0 / 0.5)')
+    expect(getRequiredToolField(colorTool.getFields(match.state), 'rgb').value).toBe('rgb(255 0 0 / 0.5)')
   })
 
   it('keeps state and reports errors for invalid edits', () => {

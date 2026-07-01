@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { getRequiredToolField } from '@pastemorphbox/core'
 import { jsonTool } from './index'
 
 describe('jsonTool', () => {
@@ -23,7 +24,7 @@ describe('jsonTool', () => {
     const [match] = jsonTool.detect('[{"id":1},{"id":2}]')
 
     expect(match?.state.summary).toBe('Array with 2 items')
-    expect(jsonTool.getFields(match!.state).find((field) => field.id === 'compact')?.value).toBe('[{"id":1},{"id":2}]')
+    expect(getRequiredToolField(jsonTool.getFields(match!.state), 'compact').value).toBe('[{"id":1},{"id":2}]')
   })
 
   it('ignores non-JSON text', () => {

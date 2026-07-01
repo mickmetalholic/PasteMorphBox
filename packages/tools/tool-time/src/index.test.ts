@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { getRequiredToolField } from '@pastemorphbox/core'
 import { timeTool } from './index'
 
 describe('timeTool', () => {
@@ -7,7 +8,7 @@ describe('timeTool', () => {
 
     expect(match?.state.epochMs).toBe(1700000000000)
     expect(match?.confidence).toBeGreaterThan(0.9)
-    expect(timeTool.getFields(match!.state).find((field) => field.id === 'iso')?.value).toBe('2023-11-14T22:13:20.000Z')
+    expect(getRequiredToolField(timeTool.getFields(match!.state), 'iso').value).toBe('2023-11-14T22:13:20.000Z')
     expect(timeTool.serializePrimary(match!.state)).toBe('1700000000')
   })
 

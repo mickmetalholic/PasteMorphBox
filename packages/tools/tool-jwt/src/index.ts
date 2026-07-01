@@ -1,8 +1,10 @@
 import type { ToolModule } from '@pastemorphbox/core'
+import { getJwtFields } from './fields'
 import { parseJwt } from './jwt-state'
 import type { JwtState } from './types'
 
 export type { JwtState } from './types'
+export { decodeJwtPayloadText } from './jwt-state'
 
 export const jwtTool: ToolModule<JwtState> = {
   id: 'jwt',
@@ -38,13 +40,7 @@ export const jwtTool: ToolModule<JwtState> = {
       },
     ]
   },
-  getFields(state) {
-    return [
-      { id: 'header', label: 'Header JSON', value: state.header, monospace: true, wide: true },
-      { id: 'payload', label: 'Payload JSON', value: state.payload, monospace: true, wide: true },
-      { id: 'signature', label: 'Signature', value: state.signature, monospace: true, wide: true },
-    ]
-  },
+  getFields: getJwtFields,
   serializePrimary(state) {
     return state.payload
   },

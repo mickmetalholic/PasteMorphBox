@@ -1,10 +1,9 @@
 import type { ToolModule } from '@pastemorphbox/core'
+import { getUuidFields } from './fields'
+import { parseUuidVersion } from './uuid-state'
+import type { UuidState } from './types'
 
-export type UuidState = {
-  raw: string
-  version: string
-  normalized: string
-}
+export type { UuidState } from './types'
 
 export const uuidTool: ToolModule<UuidState> = {
   id: 'uuid',
@@ -23,32 +22,27 @@ export const uuidTool: ToolModule<UuidState> = {
   ],
   detect(input) {
     const source = input.trim()
-    const match = source.match(/^[0-9a-f]{8}-[0-9a-f]{4}-([1-8])[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
+    const version = parseUuidVersion(source)
 
-    if (!match) {
+    if (!version) {
       return []
     }
 
     return [
       {
         title: 'UUID inspection',
-        subtitle: `Detected UUID version ${match[1]}`,
+        subtitle: `Detected UUID version ${version}`,
         confidence: 0.86,
         state: {
           raw: source,
-          version: match[1] ?? 'unknown',
+          version,
           normalized: source.toLowerCase(),
         },
         source,
       },
     ]
   },
-  getFields(state) {
-    return [
-      { id: 'version', label: 'Version', value: state.version },
-      { id: 'normalized', label: 'Normalized UUID', value: state.normalized, monospace: true, wide: true },
-    ]
-  },
+  getFields: getUuidFields,
   serializePrimary(state) {
     return state.normalized
   },

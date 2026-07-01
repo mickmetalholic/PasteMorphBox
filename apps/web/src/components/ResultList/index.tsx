@@ -1,42 +1,26 @@
-import { useEffect, useState } from 'react'
 import type { AnyToolMatch } from '@pastemorphbox/core'
-import type { CardState } from '../../types/card-state'
+import { resolveToolCard } from '../../lib/result-card'
+import { initialCardState, useCardStates } from '../../lib/use-card-states'
 import { ToolCard } from '../ToolCard'
 
 export function ResultList({ matches, onApplyInput }: { matches: AnyToolMatch[]; onApplyInput: (value: string) => void }) {
-  const [cardStates, setCardStates] = useState<Record<string, CardState>>({})
-
-  useEffect(() => {
-    setCardStates((current) => {
-      const next: Record<string, CardState> = {}
-
-      for (const match of matches) {
-        next[match.matchId] = current[match.matchId] ?? {
-          state: match.state,
-          dirty: false,
-        }
-      }
-
-      return next
+  const { cardStates, setCardState } = useCardStates(matches)
+  const cards = matches.flatMap((match, index) => {
+    const card = resolveToolCard({
+      match,
+      rank: index + 1,
+      cardState: cardStates[match.matchId] ?? initialCardState(match),
+      onApplyInput,
+      onStateChange: (state) => setCardState(match.matchId, state),
     })
-  }, [matches])
+
+    return card ? [card] : []
+  })
 
   return (
     <section className="grid gap-4">
-      {matches.map((match, index) => (
-        <ToolCard
-          key={match.matchId}
-          match={match}
-          rank={index + 1}
-          cardState={cardStates[match.matchId] ?? { state: match.state, dirty: false }}
-          onApplyInput={onApplyInput}
-          onStateChange={(state) =>
-            setCardStates((current) => ({
-              ...current,
-              [match.matchId]: state,
-            }))
-          }
-        />
+      {cards.map((card) => (
+        <ToolCard key={card.matchId} card={card} />
       ))}
     </section>
   )

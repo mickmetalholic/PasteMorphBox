@@ -1,5 +1,6 @@
-import type { ToolField, ToolModule } from '@pastemorphbox/core'
-import { buildTableState, columnCount, tableConfidence } from './table-state'
+import type { ToolModule } from '@pastemorphbox/core'
+import { getTableFields } from './fields'
+import { buildTableState, tableConfidence } from './table-state'
 import type { TableState } from './types'
 
 export type { TableState } from './types'
@@ -44,52 +45,7 @@ export const tableTool: ToolModule<TableState> = {
       },
     ]
   },
-  getFields(state) {
-    const fields: ToolField[] = [
-      {
-        id: 'summary',
-        label: 'Summary',
-        value: `${state.rows.length} row${state.rows.length === 1 ? '' : 's'} x ${columnCount(state.rows)} column${columnCount(state.rows) === 1 ? '' : 's'}`,
-      },
-      {
-        id: 'markdown',
-        label: 'Markdown table',
-        value: state.markdown,
-        monospace: true,
-        wide: true,
-      },
-      {
-        id: 'csv',
-        label: 'CSV',
-        value: state.csv,
-        monospace: true,
-        wide: true,
-      },
-      {
-        id: 'tsv',
-        label: 'TSV',
-        value: state.tsv,
-        monospace: true,
-        wide: true,
-      },
-      {
-        id: 'numbered-list',
-        label: 'Numbered list',
-        value: state.numberedList,
-        monospace: true,
-        wide: true,
-      },
-      {
-        id: 'bullet-list',
-        label: 'Bullet list',
-        value: state.bulletList,
-        monospace: true,
-        wide: true,
-      },
-    ]
-
-    return fields
-  },
+  getFields: getTableFields,
   serializePrimary(state) {
     return state.markdown
   },
