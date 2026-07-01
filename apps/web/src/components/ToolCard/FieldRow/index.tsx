@@ -2,20 +2,19 @@ import { useEffect, useState } from 'react'
 import { Clipboard } from 'lucide-react'
 import type { ToolField } from '@pastemorphbox/core'
 import { cn } from '@pastemorphbox/ui'
+import { useClipboardFeedback } from '../../../lib/use-clipboard-feedback'
 import { EditableValue } from '../EditableValue'
 
 export function FieldRow({ field, onEdit }: { field: ToolField; onEdit: (fieldId: string, value: string) => void }) {
   const [draft, setDraft] = useState(field.value)
-  const [copied, setCopied] = useState(false)
+  const { copied, copyText } = useClipboardFeedback()
 
   useEffect(() => {
     setDraft(field.value)
   }, [field.value])
 
   async function copyValue() {
-    await navigator.clipboard.writeText(field.copyValue ?? field.value)
-    setCopied(true)
-    window.setTimeout(() => setCopied(false), 1200)
+    await copyText(field.copyValue ?? field.value)
   }
 
   return (

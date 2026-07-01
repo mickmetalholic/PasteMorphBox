@@ -96,6 +96,21 @@ describe('App interactions', () => {
     expect(smartInput().value).toBe('#ffffff')
   })
 
+  it('retains card-local edits when matching input updates keep the same card id', async () => {
+    const { user } = await renderApp('/?q=%23000000')
+
+    await screen.findByText('Color conversion')
+    const rgbField = screen.getByDisplayValue('rgb(0 0 0)')
+
+    fireEvent.change(rgbField, { target: { value: 'rgb(255 255 255)' } })
+    await screen.findByText(/Edited inside this card/)
+
+    await user.type(smartInput(), ' ')
+
+    expect(screen.getByDisplayValue('rgb(255 255 255)')).toBeInTheDocument()
+    expect(smartInput().value).toBe('#000000 ')
+  })
+
   it('copies individual fields and all fields through the clipboard API', async () => {
     const { user } = await renderApp('/?q=%23ff6600')
 
@@ -108,5 +123,16 @@ describe('App interactions', () => {
 
     expect(clipboardWriteText).toHaveBeenLastCalledWith(expect.stringContaining('HEX\n#ff6600'))
     expect(clipboardWriteText).toHaveBeenLastCalledWith(expect.stringContaining('RGB\nrgb(255 102 0)'))
+  })
+
+  it('copies edited visible card fields through the bulk copy action', async () => {
+    const { user } = await renderApp('/?q=%23000000')
+
+    await screen.findByText('Color conversion')
+    fireEvent.change(screen.getByDisplayValue('rgb(0 0 0)'), { target: { value: 'rgb(255 255 255)' } })
+
+    await user.click(screen.getAllByRole('button', { name: /Copy all/i })[0]!)
+
+    expect(clipboardWriteText).toHaveBeenLastCalledWith(expect.stringContaining('RGB\nrgb(255 255 255)'))
   })
 })

@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { detectAll, getNoMatchSuggestions, getToolExampleGroups, getToolExamples, getToolModule, toolModules } from './index'
+import type { AnyToolMatch } from '@pastemorphbox/core'
+import { detectAll, getNoMatchSuggestions, getToolExampleGroups, getToolExamples, getToolModule, hasRankPolicy, registeredToolPackageNames, toolModules } from './index'
+import { dedupeMatches } from './ranking'
 
 describe('registry', () => {
   it('registers the MVP tool modules in display order', () => {
@@ -106,6 +108,14 @@ describe('registry', () => {
     expect(jsonMatch?.title).toContain('decoded URL query parameter')
   })
 
+  it('preserves complete URL query parameter values while deriving matches', () => {
+    const matches = detectAll('https://example.com/?payload=%7B%22token%22%3A%22a%3Db%3Dc%22%7D')
+    const jsonMatch = matches.find((match) => match.toolId === 'json')
+
+    expect(jsonMatch?.source).toBe('{"token":"a=b=c"}')
+    expect(jsonMatch?.title).toContain('decoded URL query parameter')
+  })
+
   it('detects JSON from Base64 decoded input', () => {
     const matches = detectAll('eyJpZCI6MX0=')
     const jsonMatch = matches.find((match) => match.toolId === 'json')
@@ -120,6 +130,13 @@ describe('registry', () => {
 
     expect(jsonMatch?.source).toBe('{"id":1}')
     expect(jsonMatch?.title).toContain('Base64URL decoded input')
+  })
+
+  it('does not recursively derive nested wrappers from derived candidates', () => {
+    const matches = detectAll('JTdCJTIyaWQlMjIlM0ExJTdE')
+
+    expect(matches.some((match) => match.toolId === 'url' && match.source === '%7B%22id%22%3A1%7D')).toBe(true)
+    expect(matches.some((match) => match.toolId === 'json' && match.source === '{"id":1}')).toBe(false)
   })
 
   it('detects JSON from a JWT payload', () => {
@@ -150,6 +167,64 @@ describe('registry', () => {
     const jsonMatches = matches.filter((match) => match.toolId === 'json' && match.source === '{"id":1}')
 
     expect(jsonMatches).toHaveLength(1)
+  })
+
+  it('deduplicates equivalent semantic matches without dropping distinct same-source matches', () => {
+    const matches: AnyToolMatch[] = [
+      {
+        toolId: 'demo',
+        matchId: 'direct:summary',
+        dedupeKey: 'summary',
+        title: 'Direct summary',
+        subtitle: 'Direct',
+        confidence: 0.9,
+        state: null,
+        source: 'same',
+      },
+      {
+        toolId: 'demo',
+        matchId: 'derived:summary',
+        dedupeKey: 'summary',
+        title: 'Derived summary',
+        subtitle: 'Derived',
+        confidence: 0.8,
+        state: null,
+        source: 'same',
+      },
+      {
+        toolId: 'demo',
+        matchId: 'direct:details',
+        dedupeKey: 'details',
+        title: 'Details',
+        subtitle: 'Distinct',
+        confidence: 0.7,
+        state: null,
+        source: 'same',
+      },
+    ]
+
+    expect(dedupeMatches(matches).map((match) => match.matchId)).toEqual(['direct:summary', 'direct:details'])
+  })
+
+  it('keeps explicit ranking policy for every registered tool', () => {
+    expect(toolModules.every((tool) => hasRankPolicy(tool.id))).toBe(true)
+  })
+
+  it('keeps registered tool packages inspectable for workspace inventory checks', () => {
+    expect(registeredToolPackageNames).toEqual([
+      '@pastemorphbox/tool-time',
+      '@pastemorphbox/tool-color',
+      '@pastemorphbox/tool-json',
+      '@pastemorphbox/tool-url',
+      '@pastemorphbox/tool-base64',
+      '@pastemorphbox/tool-jwt',
+      '@pastemorphbox/tool-uuid',
+      '@pastemorphbox/tool-hash',
+      '@pastemorphbox/tool-html-entities',
+      '@pastemorphbox/tool-extract',
+      '@pastemorphbox/tool-table',
+      '@pastemorphbox/tool-text',
+    ])
   })
 
   it('looks up modules by tool id', () => {

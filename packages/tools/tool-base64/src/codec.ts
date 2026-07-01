@@ -26,6 +26,15 @@ export function decodeBase64(input: string): string | null {
   }
 }
 
+export function decodePrintableBase64(input: string): string | null {
+  if (!looksLikeBase64(input)) {
+    return null
+  }
+
+  const decoded = decodeBase64(input)
+  return decoded !== null && isMostlyPrintable(decoded) ? decoded : null
+}
+
 export function decodeBase64Url(input: string): string | null {
   try {
     const base64 = input.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(input.length / 4) * 4, '=')
@@ -35,6 +44,15 @@ export function decodeBase64Url(input: string): string | null {
   } catch {
     return null
   }
+}
+
+export function decodePrintableBase64Url(input: string): string | null {
+  if (isJwtShaped(input) || !looksLikeBase64Url(input)) {
+    return null
+  }
+
+  const decoded = decodeBase64Url(input)
+  return decoded !== null && isMostlyPrintable(decoded) ? decoded : null
 }
 
 export function encodeBase64(input: string): string {

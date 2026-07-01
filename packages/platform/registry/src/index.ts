@@ -11,10 +11,12 @@ import {
 } from './examples'
 import { getToolModule, toolModules } from './modules'
 import { dedupeMatches, rankMatches } from './ranking'
+import { hasRankPolicy, rankBiasForTool } from './tool-policy'
+import { registeredToolPackageNames } from './tool-manifest'
 
 const derivedConfidencePenalty = 0.08
 
-export { getNoMatchSuggestions, getStarterExamples, getToolExampleGroups, getToolExamplePreviewGroups, getToolExamples, getToolModule, toolModules }
+export { getNoMatchSuggestions, getStarterExamples, getToolExampleGroups, getToolExamplePreviewGroups, getToolExamples, getToolModule, hasRankPolicy, rankBiasForTool, registeredToolPackageNames, toolModules }
 export type { RegisteredToolExample, ToolExampleGroup }
 
 export function detectAll(input: string): AnyToolMatch[] {

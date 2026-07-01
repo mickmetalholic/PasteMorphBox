@@ -1,7 +1,21 @@
+import { decodePrintableBase64, decodePrintableBase64Url } from '@pastemorphbox/tool-base64'
+import { decodeJwtPayloadText } from '@pastemorphbox/tool-jwt'
+import { decodePercentText, decodeUrlParameterValue, extractUrlParamValues } from '@pastemorphbox/tool-url'
+
 export type DerivedCandidate = {
   source: string
   label: string
 }
+
+type CandidateProducer = (source: string) => DerivedCandidate[]
+
+const candidateProducers: CandidateProducer[] = [
+  percentDecodedCandidate,
+  urlParameterCandidates,
+  base64Candidate,
+  base64UrlCandidate,
+  jwtPayloadCandidate,
+]
 
 export function deriveCandidates(input: string): DerivedCandidate[] {
   const source = input.trim()
@@ -10,114 +24,49 @@ export function deriveCandidates(input: string): DerivedCandidate[] {
     return []
   }
 
-  const candidates: DerivedCandidate[] = []
-  addCandidate(candidates, decodePercent(source), 'percent-decoded input', source)
-
-  for (const value of extractUrlParamValues(source)) {
-    addCandidate(candidates, value, 'URL query parameter', source)
-    addCandidate(candidates, decodeUrlComponentValue(value), 'decoded URL query parameter', source)
-  }
-
-  addCandidate(candidates, decodeBase64(source), 'Base64 decoded input', source)
-  addCandidate(candidates, decodeBase64Url(source), 'Base64URL decoded input', source)
-  addCandidate(candidates, decodeJwtPayload(source), 'JWT payload', source)
-
-  return candidates
+  return dedupeCandidates(candidateProducers.flatMap((producer) => producer(source)), source)
 }
 
-function addCandidate(candidates: DerivedCandidate[], value: string | null, label: string, original: string) {
+function percentDecodedCandidate(source: string): DerivedCandidate[] {
+  return candidateFromValue(decodePercentText(source), 'percent-decoded input')
+}
+
+function urlParameterCandidates(source: string): DerivedCandidate[] {
+  return extractUrlParamValues(source).flatMap((value) => [
+    ...candidateFromValue(value, 'decoded URL query parameter'),
+    ...candidateFromValue(decodeUrlParameterValue(value), 'decoded URL query parameter'),
+  ])
+}
+
+function base64Candidate(source: string): DerivedCandidate[] {
+  return candidateFromValue(decodePrintableBase64(source), 'Base64 decoded input')
+}
+
+function base64UrlCandidate(source: string): DerivedCandidate[] {
+  return candidateFromValue(decodePrintableBase64Url(source), 'Base64URL decoded input')
+}
+
+function jwtPayloadCandidate(source: string): DerivedCandidate[] {
+  return candidateFromValue(decodeJwtPayloadText(source), 'JWT payload')
+}
+
+function candidateFromValue(value: string | null, label: string): DerivedCandidate[] {
   const source = value?.trim()
-
-  if (!source || source === original || candidates.some((candidate) => candidate.source === source)) {
-    return
-  }
-
-  candidates.push({ source, label })
+  return source ? [{ source, label }] : []
 }
 
-function decodePercent(source: string): string | null {
-  if (!/%[0-9a-f]{2}/i.test(source)) {
-    return null
+function dedupeCandidates(candidates: DerivedCandidate[], original: string): DerivedCandidate[] {
+  const seen = new Set<string>()
+  const result: DerivedCandidate[] = []
+
+  for (const candidate of candidates) {
+    if (candidate.source === original || seen.has(candidate.source)) {
+      continue
+    }
+
+    seen.add(candidate.source)
+    result.push(candidate)
   }
 
-  try {
-    return decodeURIComponent(source)
-  } catch {
-    return null
-  }
-}
-
-function extractUrlParamValues(source: string): string[] {
-  try {
-    const url = new URL(/^https?:\/\//i.test(source) ? source : `https://${source}`)
-    return url.search
-      .slice(1)
-      .split('&')
-      .map((part) => part.split('=')[1] ?? '')
-      .filter(Boolean)
-  } catch {
-    return []
-  }
-}
-
-function decodeUrlComponentValue(source: string): string | null {
-  if (!/%[0-9a-f]{2}|\+/i.test(source)) {
-    return null
-  }
-
-  try {
-    return decodeURIComponent(source.replace(/\+/g, '%20'))
-  } catch {
-    return null
-  }
-}
-
-function decodeBase64(source: string): string | null {
-  const normalized = source.replace(/\s+/g, '')
-
-  if (normalized.length < 8 || normalized.length % 4 !== 0 || !/^[A-Za-z0-9+/]+={0,2}$/.test(normalized)) {
-    return null
-  }
-
-  return decodeBase64Alphabet(normalized)
-}
-
-function decodeBase64Url(source: string): string | null {
-  if (source.includes('.') || source.length < 8 || !/^[A-Za-z0-9_-]+={0,2}$/.test(source)) {
-    return null
-  }
-
-  const base64 = source.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(source.length / 4) * 4, '=')
-  return decodeBase64Alphabet(base64)
-}
-
-function decodeJwtPayload(source: string): string | null {
-  const parts = source.split('.')
-
-  if (parts.length !== 3 || !parts[1]) {
-    return null
-  }
-
-  const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(parts[1].length / 4) * 4, '=')
-  return decodeBase64Alphabet(payload)
-}
-
-function decodeBase64Alphabet(source: string): string | null {
-  try {
-    const binary = atob(source)
-    const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0))
-    const text = new TextDecoder().decode(bytes)
-    return isMostlyPrintable(text) ? text : null
-  } catch {
-    return null
-  }
-}
-
-function isMostlyPrintable(value: string): boolean {
-  const printable = [...value].filter((character) => {
-    const code = character.charCodeAt(0)
-    return code > 8 && (code < 14 || code > 31)
-  }).length
-
-  return value.length > 0 && printable / value.length > 0.9
+  return result
 }

@@ -1,10 +1,9 @@
 import type { ToolModule } from '@pastemorphbox/core'
+import { getHashFields } from './fields'
+import { hashKindForLength } from './hash-state'
+import type { HashState } from './types'
 
-export type HashState = {
-  raw: string
-  hashKind: string
-  normalized: string
-}
+export type { HashState } from './types'
 
 export const hashTool: ToolModule<HashState> = {
   id: 'hash',
@@ -48,29 +47,8 @@ export const hashTool: ToolModule<HashState> = {
       },
     ]
   },
-  getFields(state) {
-    return [
-      { id: 'hash-kind', label: 'Detected hash shape', value: state.hashKind },
-      { id: 'normalized', label: 'Normalized value', value: state.normalized, monospace: true, wide: true },
-    ]
-  },
+  getFields: getHashFields,
   serializePrimary(state) {
     return state.normalized
   },
-}
-
-function hashKindForLength(length: number): string | null {
-  if (length === 32) {
-    return 'MD5'
-  }
-
-  if (length === 40) {
-    return 'SHA-1'
-  }
-
-  if (length === 64) {
-    return 'SHA-256'
-  }
-
-  return null
 }

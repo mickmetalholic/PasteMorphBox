@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { detectAll, getNoMatchSuggestions, getStarterExamples, getToolExampleGroups, getToolExamplePreviewGroups, getToolExamples } from '@pastemorphbox/registry'
+import { detectAll, getNoMatchSuggestions, getStarterExamples, getToolExampleGroups, getToolExamplePreviewGroups, getToolExamples, registeredToolPackageNames } from '@pastemorphbox/registry'
+import { registeredToolWorkspacePackages, workspaceTranspilePackages } from '../../workspace-packages'
 
 describe('paste discovery content', () => {
   it('uses unique example ids with non-empty samples', () => {
@@ -44,5 +45,15 @@ describe('paste discovery content', () => {
 
     expect(suggestedIds.length).toBeLessThanOrEqual(6)
     expect(suggestedIds.every((id) => exampleIds.has(id))).toBe(true)
+  })
+
+  it('keeps web transpilation inventory aligned with the registry tool manifest', () => {
+    expect(registeredToolWorkspacePackages).toEqual(registeredToolPackageNames)
+    expect(workspaceTranspilePackages).toEqual([
+      '@pastemorphbox/core',
+      '@pastemorphbox/registry',
+      ...registeredToolPackageNames,
+      '@pastemorphbox/ui',
+    ])
   })
 })

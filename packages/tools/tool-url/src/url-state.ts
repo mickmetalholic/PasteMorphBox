@@ -8,6 +8,40 @@ export function hasEscapes(input: string): boolean {
   return /%[0-9a-f]{2}/i.test(input)
 }
 
+export function decodePercentText(input: string): string | null {
+  if (!hasEscapes(input)) {
+    return null
+  }
+
+  try {
+    return decodeURIComponent(input)
+  } catch {
+    return null
+  }
+}
+
+export function extractUrlParamValues(input: string): string[] {
+  const url = parseInputUrl(input)
+
+  if (!url) {
+    return []
+  }
+
+  return Array.from(url.searchParams.values()).filter(Boolean)
+}
+
+export function decodeUrlParameterValue(input: string): string | null {
+  if (!/%[0-9a-f]{2}|\+/i.test(input)) {
+    return null
+  }
+
+  try {
+    return decodeURIComponent(input.replace(/\+/g, '%20'))
+  } catch {
+    return null
+  }
+}
+
 export function confidence(input: string): number {
   if (/^https?:\/\//i.test(input)) {
     return 0.9
@@ -42,21 +76,30 @@ function safeDecode(input: string): string {
 }
 
 function parseUrl(input: string): UrlState['url'] | undefined {
-  try {
-    const url = new URL(/^https?:\/\//i.test(input) ? input : `https://${input}`)
-    const params = Array.from(url.searchParams.entries())
-      .map(([key, value]) => `${key}: ${value}`)
-      .join('\n')
+  const url = parseInputUrl(input)
 
-    return {
-      protocol: url.protocol,
-      host: url.host,
-      pathname: url.pathname,
-      search: url.search,
-      hash: url.hash,
-      params,
-    }
-  } catch {
+  if (!url) {
     return undefined
+  }
+
+  const params = Array.from(url.searchParams.entries())
+    .map(([key, value]) => `${key}: ${value}`)
+    .join('\n')
+
+  return {
+    protocol: url.protocol,
+    host: url.host,
+    pathname: url.pathname,
+    search: url.search,
+    hash: url.hash,
+    params,
+  }
+}
+
+function parseInputUrl(input: string): URL | null {
+  try {
+    return new URL(/^https?:\/\//i.test(input) ? input : `https://${input}`)
+  } catch {
+    return null
   }
 }

@@ -1,8 +1,10 @@
 import type { ToolModule } from '@pastemorphbox/core'
 import { decodeBase64, decodeBase64Url, detectBase64Kind, encodeBase64, encodeBase64Url, isMostlyPrintable } from './codec'
+import { getBase64Fields } from './fields'
 import type { Base64State } from './types'
 
 export type { Base64State } from './types'
+export { decodePrintableBase64, decodePrintableBase64Url } from './codec'
 
 export const base64Tool: ToolModule<Base64State> = {
   id: 'base64',
@@ -56,24 +58,7 @@ export const base64Tool: ToolModule<Base64State> = {
       },
     ]
   },
-  getFields(state) {
-    return [
-      {
-        id: 'decoded',
-        label: 'Decoded text',
-        value: state.decoded,
-        wide: true,
-        monospace: true,
-      },
-      {
-        id: 'encoded',
-        label: state.kind === 'base64' ? 'Encoded Base64' : 'Normalized Base64URL',
-        value: state.encoded,
-        wide: true,
-        monospace: true,
-      },
-    ]
-  },
+  getFields: getBase64Fields,
   serializePrimary(state) {
     return state.decoded
   },

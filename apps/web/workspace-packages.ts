@@ -1,17 +1,21 @@
+export const registeredToolWorkspacePackages = [
+  '@pastemorphbox/tool-time',
+  '@pastemorphbox/tool-color',
+  '@pastemorphbox/tool-json',
+  '@pastemorphbox/tool-url',
+  '@pastemorphbox/tool-base64',
+  '@pastemorphbox/tool-jwt',
+  '@pastemorphbox/tool-uuid',
+  '@pastemorphbox/tool-hash',
+  '@pastemorphbox/tool-html-entities',
+  '@pastemorphbox/tool-extract',
+  '@pastemorphbox/tool-table',
+  '@pastemorphbox/tool-text',
+] as const
+
 export const workspaceTranspilePackages = [
   '@pastemorphbox/core',
   '@pastemorphbox/registry',
-  '@pastemorphbox/tool-base64',
-  '@pastemorphbox/tool-color',
-  '@pastemorphbox/tool-extract',
-  '@pastemorphbox/tool-hash',
-  '@pastemorphbox/tool-html-entities',
-  '@pastemorphbox/tool-json',
-  '@pastemorphbox/tool-jwt',
-  '@pastemorphbox/tool-table',
-  '@pastemorphbox/tool-text',
-  '@pastemorphbox/tool-time',
-  '@pastemorphbox/tool-url',
-  '@pastemorphbox/tool-uuid',
+  ...registeredToolWorkspacePackages,
   '@pastemorphbox/ui',
 ] as const

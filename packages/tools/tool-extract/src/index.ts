@@ -1,5 +1,6 @@
-import type { ToolField, ToolModule } from '@pastemorphbox/core'
+import type { ToolModule } from '@pastemorphbox/core'
 import { buildExtractState, extractConfidence } from './extract-state'
+import { getExtractFields } from './fields'
 import type { ExtractState } from './types'
 
 export type { ExtractState } from './types'
@@ -44,35 +45,7 @@ export const extractTool: ToolModule<ExtractState> = {
       },
     ]
   },
-  getFields(state) {
-    const fields: ToolField[] = [
-      {
-        id: 'summary',
-        label: 'Summary',
-        value: `${state.total} extracted value${state.total === 1 ? '' : 's'} across ${state.groups.length} group${state.groups.length === 1 ? '' : 's'}`,
-      },
-    ]
-
-    for (const group of state.groups) {
-      fields.push({
-        id: group.key,
-        label: group.label,
-        value: group.values.join('\n'),
-        monospace: true,
-        wide: true,
-      })
-    }
-
-    fields.push({
-      id: 'csv',
-      label: 'CSV',
-      value: state.csv,
-      monospace: true,
-      wide: true,
-    })
-
-    return fields
-  },
+  getFields: getExtractFields,
   serializePrimary(state) {
     return state.csv
   },

@@ -22,6 +22,16 @@ export function parseJwt(source: string): JwtState | null {
   }
 }
 
+export function decodeJwtPayloadText(source: string): string | null {
+  const parts = source.split('.')
+
+  if (parts.length !== 3 || !parts[1]) {
+    return null
+  }
+
+  return decodeBase64Url(parts[1])
+}
+
 function parseBase64UrlJson(value: string): string | null {
   const text = decodeBase64Url(value)
 
